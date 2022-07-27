@@ -1,4 +1,5 @@
 # Jemdoc-Whispering-Angel-Rose
+<<<<<<< HEAD
 This is developed for recording the sincere and happy memory between Ding Yi and Yanming.
 
 jemdoc+MathJax
@@ -55,3 +56,6 @@ README of the original jemdoc
 > of code I would put on my CV. Lots of people use jemdoc, especially in academia.
 > 
 > Much more info at http://jemdoc.jaboc.net/.
+=======
+This is developed for recording the sincere and happy memory between Ding Yi and Yan.
+>>>>>>> 074ec0a0c2efdf450d8fc8fc630b469d925ea7c4
