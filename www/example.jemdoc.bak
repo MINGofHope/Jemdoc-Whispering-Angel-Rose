@@ -6,6 +6,15 @@ This page shows example jemdoc source and output side by side. (The spacing of
 the `page' on the left is consequently incorrect.)
 ~~~
 
+
+~~~
+{}{img_left}{image/GreenSim.jpg}{Green Simulation}{350}
+In many financial, actuarial, industrial applications, simulation models are often run repeatedly to perform the same task with different inputs due to changing market conditions or system states.  "Green simulation" is the practice, currently under development, of reusing simulation output generated during previous experiments to increase the computational efficiency of the current experiment.
+Our research aims to develop efficient methods of output recycling and to examine their theoretical properties and practical performances.
+~~~
+
+
+
 ## jemdoc: start now.
 ~~~
 {}{raw}
