@@ -5,14 +5,23 @@
 <meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" href="jemdoc.css" type="text/css" />
-<title>Yanming Liu</title>
+<title>jemdoc &ndash; light markup</title>
+<!-- MathJax -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async>
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+	  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- End MathJax -->
 </head>
 <body>
 <table summary="Table for page layout." id="tlayout">
 <tr valign="top">
 <td id="layout-menu">
-<div class="menu-category">Journey</div>
-<div class="menu-item"><a href="home.html">Home</a></div>
+<div class="menu-category">Who am I ?</div>
+<div class="menu-item"><a href="index.html" class="current">Bio</a></div>
 <div class="menu-item"><a href="research.html">Research</a></div>
 <div class="menu-item"><a href="study.html">Study</a></div>
 <div class="menu-item"><a href="love.html">Love</a></div>
@@ -21,79 +30,78 @@
 </td>
 <td id="layout-content">
 <div id="toptitle">
-<h1>Yanming Liu</h1>
-<div id="subtitle">
+<h1>jemdoc &ndash; light markup</h1>
+<div id="subtitle"><a href="http://stanford.edu/~jacobm/" target=&ldquo;blank&rdquo;>Jacob Mattingley</a> (<a href="mailto:jacobm@stanford.edu" target=&ldquo;blank&rdquo;>jacobm@stanford.edu</a>)
+
+jemdoc is a light text-based markup language designed for creating 
+websites. It takes a text file written with <a href="example.html" target=&ldquo;blank&rdquo;>jemdoc markup</a>, an
+optional configuration file and an optional menu file, and makes static websites
+that look something like this one, <a href="http://cvxmod.net/" target=&ldquo;blank&rdquo;>that one</a> or
+<a href="http://www.stanford.edu/class/ee364a/" target=&ldquo;blank&rdquo;>another one</a>.
+
+jemdoc was inspired by <a href="http://www.methods.co.nz/asciidoc/" target=&ldquo;blank&rdquo;>AsciiDoc</a>, which is a
+text document format. AsciiDoc is great, and lots of the ideas from AsciiDoc are
+copied in jemdoc. The main differences are that jemdoc is simpler (you could say
+deliberately feature poor) and has more consistent syntax.
+
+<a href="download.html" target=&ldquo;blank&rdquo;>Download jemdoc.</a>
+
 </div>
 </div>
-<table class="imgtable"><tr><td>
-<img src="html/images/bio.JPG" alt="" width="131px" height="160px" />&nbsp;</td>
-<td align="left"><p>Master, <br />
-<a href="https://catalog.northeastern.edu/graduate/engineering/mechanical-industrial/data-analytics-engineering-ms/" target=&ldquo;blank&rdquo;>Data Analytics Engineeering</a> <br />
-<a href="https://mie.northeastern.edu/" target=&ldquo;blank&rdquo;>Department of Mechanical &amp; Industrial Engineering</a> <br />
-360 Huntington Ave, <br />
-Boston, MA 02115 <br />
-Phone: +1 617 959 5728 <br />
-Email: <i>liu.yanmi</i> [@] northeastern [DOT] edu <br />
-<a href="https://github.com/MINGofHope" target=&ldquo;blank&rdquo;>Github</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.linkedin.com/in/yanming21/" target=&ldquo;blank&rdquo;>LinkedIn</a>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Version <tt>0.7.3</tt> was released on 2012-11-27 with some small bug fixes.
+See the <a href="revision.html" target=&ldquo;blank&rdquo;>release notes</a>.
 </p>
-</td></tr></table>
-<h2>About me</h2>
-<p><div align="justify">
-As a beginning data scientist, I have been developing and emphasizing
-on maintaining a distinctive research perspective, strong analytical 
-skills, a generous sharing spirit, and a lifelong learning mentality.
-I have received my B.S. and first mater's degree of Engineering from 
-Qilu University of Technology and Shandong University, Jinan, China, 
-in 2017 and 2020, respectively. A new journey has been set off in 
-data analysis and machine learning at Northeastern Universtiy since
-September 2021 as a second master's program. 
-</div>
+</div></div>
+<p><a href="https://github.com/jem/jemdoc" target=&ldquo;blank&rdquo;>Contribute to jemdoc on github.</a>
 
 </p>
-<h2>Research</h2>
+<h2>Goals</h2>
 <ul>
-<li><p>Intepretable Deep Neural Network
+<li><p>Simple, consistent syntax.
 </p>
 </li>
-<li><p>Skill Gap Analyis for Data Scientist in Healthcare
+<li><p>\(\mbox{\LaTeX}\) <a href="latex.html" target=&ldquo;blank&rdquo;>equation support</a>.
+</p>
+</li>
+<li><p><a href="tables.html" target=&ldquo;blank&rdquo;>Table support</a>.
+</p>
+</li>
+<li><p>Portability. The (single) jemdoc <a href="http://www.python.org/" target=&ldquo;blank&rdquo;>Python</a> file +
+single css file + your input file &rarr; html.
+</p>
+</li>
+<li><p>Based on <a href="http://www.w3.org/Style/CSS/" target=&ldquo;blank&rdquo;>CSS</a> so formatting specifics are
+independent of jemdoc.
+</p>
+</li>
+<li><p>Production of clean,
+<a href="http://validator.w3.org/check/referer" target=&ldquo;blank&rdquo;>standards-compliant</a> <a href="http://www.w3.org/TR/xhtml11/" target=&ldquo;blank&rdquo;>XHTML 1.1</a>.
+</p>
+</li>
+<li><p>Minimal bells and whistles, but simple fallback to raw html if required.
 
 </p>
 </li>
 </ul>
-<div class="infoblock">
-<div class="blocktitle">Publications</div>
-<div class="blockcontent">
-<ol>
-<li><p>Zhang, S., Liu, Y., Tang, J., Ying, L. and Muller, R., 2019. <a href="https://cob.silverchair-cdn.com/cob/content_public/journal/jeb/222/18/10.1242_jeb.210252/4/jeb210252.pdf?Expires=1661973582&amp;Signature=G9Z3AvMhBHrxG~jGE6l~NAZZ5v6c4VzNTQhlUVZsDMPwjiQZT-~bXBiyVlgb1EzDlOSCBLQZ~oB4Ho3DPw048BOFUwkCa8FSko9gAYp1pJlNaXK-mCjD4GrAwksEKeo0lgDrc89nALMMr4ietp8zgKlWQwsgZ0aus27Rr2Dglp5XU3-HWQ2e8uDIg5yO1h86YkO3LJbR-tzJ-3wIZjtmaoAPOagHeLNhTYkJg08DlhWiB~wqwVyyfVpxNRWUJvCbKp~QUGK2nmU-mRAvP0dGnhNO2YqTeHEsQSqwwqIfmw~~Qtl58csDBVGMG0u55JHyOuwNVzCuz4P7kiRDJi9GXw__&amp;Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" target=&ldquo;blank&rdquo;>Dynamic relationship between noseleaf and pinnae in echolocating hipposiderid bats</a>. Journal of Experimental Biology, 222(18), p.jeb210252.
+<h2>License</h2>
+<p>Copyright &copy; 2007&ndash;2012 Jacob Mattingley.
+
+jemdoc is free software; you can redistribute it and/or modify it under the
+terms of the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target=&ldquo;blank&rdquo;>GNU General Public
+License</a> as published by the Free Software Foundation; either version 3 of the
+License, or (at your option) any later version.
+
+jemdoc is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target=&ldquo;blank&rdquo;>GNU
+General Public License</a> for more details.
 </p>
-</li>
-<li><p>LIU Yanming, ZHANG Shuxin, YANG Luhui. <a href="http://sxjs.cnjournals.cn/ch/reader/create_pdf.aspx?file_no=20210219&amp;flag=1&amp;journal_id=sxjs&amp;year_id=2021" target=&ldquo;blank&rdquo;>Pattern matching between bisonar pulse sequence and structural deformation of Pratt's roundleaf bats</a>[J]. Technical Acoustics,
-2021, 40(2): 269-274. DOI: 10.16300/j.cnki.1000-3630.2021.02.019  | Chinese Journal 
-</p>
-</li>
-<li><p>LIU Yanming, DU Jin, &amp; Wang Liguo. <a href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&amp;dbname=CJFDLAST2018&amp;filename=GJJS201801002&amp;uniplatform=NZKPT&amp;v=jfhDGPjbHtLrPgw3SZoH0GcyhcETzni56ukEB3rqPUY4acEU_sYyNHcxoVoFtvzg" target=&ldquo;blank&rdquo;>Overview of PVD Coating and Its Life</a>[J]. Tool Engineeering, 2018,52(01):3-7.DOI:10.16567/j.cnki.1000-7008.2018.01.001. | Chinese Journal
-</p>
-</li>
-</ol>
-</div></div>
-<div class="infoblock">
-<div class="blocktitle">Conferences</div>
-<div class="blockcontent">
-<ol>
-<li><p><a href="https://asa.scitation.org/doi/abs/10.1121/1.5101231" target=&ldquo;blank&rdquo;>&ldquo;Pulse-train time structure for dynamic biomimetic sonar&rdquo;</a>: 177th Meeting, Acoustical Society of America.
-Louisville, Kentucky, 13-17 May 2019. | 15 minutes speech
-</p>
-</li>
-<li><p><a href="https://asa.scitation.org/doi/10.1121/1.5137485" target=&ldquo;blank&rdquo;>&ldquo;Learning the relationship between biosonar pulse trains and peripheral dynamics in hipposiderid
-bats&rdquo;</a>: 178th Meeting, Acoustical Society of America. San Diego, California, 2-6 December 2019. | 15 minutes speech
-</p>
-</li>
-</ol>
-</div></div>
-<p>Find me more via the <a href="https://www.overleaf.com/read/dqprxyjwdrmf" target=&ldquo;blank&rdquo;>CV</a>.</p>
 <div id="footer">
 <div id="footer-text">
-Page generated 2022-07-28 20:41:29 东部夏令时, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+Page generated 2022-07-27 00:50:45 东部夏令时, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+(<a href="index.jemdoc">source</a>)
 </div>
 </div>
 </td>
