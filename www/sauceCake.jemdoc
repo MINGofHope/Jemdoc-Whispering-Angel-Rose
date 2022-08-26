@@ -1,12 +1,6 @@
-# jemdoc: menu{MENU}{index.html}, nofooter
-~~~
-This page is intended for documenting my progress in learning to cook or the party memory that I treasure. 
-Making food for the people you love the most can be an incredibly uplifting experience. Why not start now?
-~~~
+# jemdoc: menu{MEAL}{index.html}, nofooter
 
-== Sauce Pancake
-
-
+= Sauce Pancake
 ~~~
 {Ingredients}
 - Oil
@@ -32,8 +26,9 @@ Making food for the people you love the most can be an incredibly uplifting expe
 . Cut sauce pancake into small pieces as you like for convenience
 ~~~
 
+==== Renderings
 ~~~
-{Renderings}{img_left}{images/us.JPG}{}{131}{160}
+{Renderings}{img_left}{images/sauceCake.JPG}{}{900}{500}
 ~~~
 
 
