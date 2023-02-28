@@ -1,8 +1,8 @@
-# jemdoc: menu{MENU}{index.html}
+# jemdoc: menu{outline/MENU}{index.html}
 == Yanming Liu
 
 ~~~
-{}{img_left}{html/images/bio.JPG}{}{131}{160} yes
+{}{img_left}{../images/bio.jpg}{}{131}{160} yes
 Master, \n
 [https://catalog.northeastern.edu/graduate/engineering/mechanical-industrial/data-analytics-engineering-ms/ Data Analytics Engineeering] \n
 [https://mie.northeastern.edu/ Department of Mechanical & Industrial Engineering] \n
@@ -22,7 +22,8 @@ I have received my B.S. and first mater's degree of Engineering from
 Qilu University of Technology and Shandong University, Jinan, China, 
 in 2017 and 2020, respectively. A new journey has been set off in 
 data analysis and machine learning at Northeastern Universtiy since
-September 2021 as a second master's program. 
+September 2021 as a second master's
+ program.
 </div>}}
 
 == Research
