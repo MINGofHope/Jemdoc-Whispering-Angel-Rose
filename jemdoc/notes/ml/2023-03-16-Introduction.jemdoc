@@ -1,0 +1,200 @@
+# jemdoc: menu{outline/ML}{ml.html}
+
+= Introduction
+Machine learning builds on the probability theory. For probability, two perspectives can be came up with,
+Frequency Estimate or Bayesian Generation.
+
+Suppose a dataset $X = (x_1, x_2, \ldots, x_n)^T$, $x_i \in R^{d}$,
+
+== Frequency Estimate
+It directly models probability of the data given parameters, $p(X|\theta)$, and assume that $\theta$ a fix value.
+Then $\theta$ can be solved by setting the derivatives of conditional probability as 0 for the maximum probability of
+the data. The method is called Maximum Likelihood Estimate (MLE). In math expression, we have below,
+
+\(
+    P = logp(X|\theta) =_{iid} \sum_{i=1}^{n}logp(x_i|\theta) \\
+    \frac{\partial P}{\partial \theta} = 0 \\
+    \theta = \theta^{\star}
+\)
+
+=== $p(x_i|\theta) \sim N(\mu, \sigma^2)$
+\(
+\begin{equation*}
+\begin{split}
+    \theta^{\star} & = \underset{\theta}{argmax} log[p(X|\theta)] \\
+    & \underset{iid}{=} \underset{\theta}{argmax} log\prod_{i=1}^{n}[p(x_i|\theta)] \\
+    & = \underset{\theta}{argmax}\sum_{i=1}^{n}log[\frac{1}{\sqrt{2\pi}\sigma}exp[{-\frac{(x_i-\mu)^2}{2\sigma^2}]]} \\
+    & \sim \underset{\theta}{argmax}\sum_{i=1}^{n}[-log(\sigma) - \frac{(x_i - \mu)^2}{\sigma^2}]\\
+    & = \underset{\theta}{argmax}S
+\end{split}
+\end{equation*}
+\)
+
+Here, $\theta$ contains $\mu, \sigma$. To solve $\mu$, let $\frac{\partial S}{\partial \mu} = 0$,
+i.e., $\sum_{i=1}^{n}(x_i - \mu) = 0 $
+
+~~~
+\(
+    \mu^{\star} = \frac{1}{n}\sum_{i=1}^{n}x_i
+\)
+~~~
+
+
+Similarly, let $\frac{\partial S}{\partial \sigma^2} = 0$, i.e. $\sum_{i=1}^{n}[\sigma^2-(x_i-\mu^{\star})^2] = 0$
+
+~~~
+\(
+    {\sigma^2}^{\star} = \frac{1}{n}\sum_{i=1}^{n}(x_i-\mu^{\star})^2
+\)
+~~~
+
+Check estimators, $\theta^{\star}$ (parameter value for sample), biased or not, i.e., whether $E(\theta^{\star}) = \theta$,
+where $\theta$ is the true value for the population
+
+~~~
+{Sample mean equals the population mean (unbiased)}
+\(
+    \begin{equation*}
+    \begin{split}
+        E(\mu^{\star}) & = E(\frac{1}{n}\sum_{i=1}^{n}x_i) = \frac{1}{n}\sum_{i=1}^{n}E(x_i) = \mu
+    \end{split}
+    \end{equation*}
+\)
+~~~
+
+~~~
+{Sample variance does not equal the population variance (biased)}
+\(
+    \begin{equation*}
+    \begin{split}
+       E({\sigma^2}^{\star}) & = E(\frac{1}{n}\sum_{i=1}^{n}(x_i-\mu^{\star})^2) \\
+       & = E(\frac{1}{n}\sum_{i=1}^{n}[(x_i - \mu) - (\mu^{\star} - \mu))]^{2}) \\
+       & = E(\frac{1}{n}\sum_{i=1}^{n}[(x_i - \mu)^2 - 2(x_i-\mu)(\mu^{\star}-\mu) + (\mu^{\star}-\mu)^2]) \\
+       & = E(\frac{1}{n}\sum_{i=1}^{n}(x_i-\mu)^2 - (\mu^{\star}-\mu)^2) \\
+       & = Var(x_i) - Var(\mu^{\star}) \\
+       & = \sigma^2 - \frac{\sigma^2}{n} \\
+       & = \frac{n-1}{n}\sigma^2 \\
+       & \neq \sigma^2
+    \end{split}
+    \end{equation*}
+\)
+~~~
+
+This is weakness of the MLE method, the cause of the overwriting. When $n \rightarrow \infty$, the error will be minimized.
+
+=== $p(x_i|\theta) \sim Bernoulli(x_i;\theta)$
+Bernoulli distribution quantify the probability, $p(x_i|\theta)$, of an event with two results, $x_i = \{1, 0\}$. $\theta$ is
+the probability when the result equals 1, i.e., $x_i = 1$; $1-\theta$ is the one when the result equals 0, i.e, $x_i = 0$. A
+classical example following the distribution is flipping coins (event). This event has two sides, front or back side. We
+aim to obtain the probability of front side or back side if flipped the coin once. In math,
+
+  \(
+  p(x_i|\theta) = \theta^{x_i}(1-\theta)^{1-x_i} = \left\{
+  \begin{array}{ll}
+  \theta, & x_i = 1  \\
+  1 - \theta, & x_i = 0 \\
+  \end{array}\right.
+  \)
+
+To continue MLE for the optimal $\theta^{\star}$,
+
+\(
+\begin{equation*}
+\begin{split}
+    \theta^{\star} & = \underset{\theta}{argmax} log[p(X|\theta)] \\
+    & \underset{iid}{=} \underset{\theta}{argmax} log\prod_{i=1}^{n}[p(x_i|\theta)] \\
+    & = \underset{\theta}{argmax}\sum_{i=1}^{n}log[\theta^{x_i}(1-\theta)^{1-x_i}]\\
+    & = \underset{\theta}{argmax}\sum_{i=1}^{n}[x_ilog(\theta) + (1-x_i)log(1-\theta)]\\\\
+    & = \underset{\theta}{argmax}S
+\end{split}
+\end{equation*}
+\)
+
+Let $\frac{\partial S}{\partial \theta} = 0$, i.e., $\sum_{i=1}^{n}(\frac{x_i}{\theta}-\frac{1-x_i}{1-\theta}) = 0$
+
+~~~
+\(
+    \theta^{\star} = \frac{\sum_{i=1}^{n}x_i}{n}
+\)
+~~~
+
+== Bayesian Generation
+Bayes formula: $p(\theta|X) = \frac{p(X|\theta) \cdot p(\theta)}{p(X)}$. Here, $P(X)=\int p(X|\theta)p(
+\theta)d\theta$, which is a function without the parameter $\theta$. $\theta$ is regarded as a distribution, which
+can be calculated after seeing the event like $X$ from the prior, $p(\theta)$, to the posterior, $p(\theta|X)$.
+$p(X|\theta)$ is the likelihood. In reality, we know those two distributions after the equal symbol, and obtain the
+$\theta$ by the Maximum A Posterior (MAP). Suppose the prior follows a beta distribution,
+
+\(
+     p(\theta) \sim beta(a, b) = \frac{\theta^{a-1}(1-\theta)^{b-1}}{\beta(a, b)}
+\)
+
+Here, $\beta(a,b) = \frac{\Gamma(a)}{\Gamma{a} \cdot \Gamma{b}}$. Gamma function $\Gamma{(z)} = \int_{0}^{\infty} t^{z-1}\exp(-t)dt$,
+and $a$, $b$ are positive values. So, the denominator is a constant value that does not influence the final solution for $\theta$.
+Each item in the likelihood function follows a Bernulli distribution,
+
+\(
+    p(x_i|\theta) \sim Bernoulli(x_i;\theta) \\
+    P(X|\theta) \underset{iid}{=} \prod_{i=1}^{n} p(x_i|\theta) = \theta^{\sum_{i=1}^{n}x_i} (1-\theta)^{n-\sum_{i=1}^{n}x_i}
+\)
+
+Then the posterior,
+
+\(
+    \theta^{\star} = \underset{\theta}{argmax}p(\theta|X) \\
+    p(\theta|X) \sim p(X|\theta)p(\theta) = \theta^{\sum_{i=1}^{n}x_i} (1-\theta)^{n-\sum_{i=1}^{n}x_i}\frac{\theta^{a-1}(1-\theta)^{b-1}}{\beta(a, b)}\\
+    \sim \theta^{\sum_{i=1}^{n}x_i + a - 1}  (1-\theta)^{n-\sum_{i=1}^{n}x_i + b - 1}
+\)
+
+let $a' = \sum_{i=1}^{n}x_i + a$, and $b' = n-\sum_{i=1}^{n}x_i + b$, the the above formula,
+
+\(
+    p(\theta|X) \sim = \theta^{a'-1}(1-\theta)^{b'-1}
+\)
+
+
+$p(\theta|X), p(\theta) \sim beta(,)$. If the posterior distribution and the prior distribution both belong to the same
+family of distributions, then we can say that the prior is conjugate to the likelihood function.
+
+
+
+~~~
+Let $\frac{\partial p(\theta|X)}{\partial \theta} = 0$, we easily have
+\(
+    \theta^{\star'}_{MAP} = \frac{a'-1}{a'+b'-2} = \frac{\sum_{i=1}^{n}x_i + a - 1}{\sum_{i=1}^{n}x_i + a + n-\sum_{i=1}^{n}x_i + b - 2}
+    = \frac{\sum_{i=1}^{n}x_i + a - 1}{ a + n + b - 2}
+\)
+~~~
+
+Conjugate priors in Bayesian statistics allow for convenient closed-form solutions for the posterior distribution of the parameter of interest.
+
+===  ${\theta_{MAP}^{\star'}}$
+To vividly explain the $\theta_{MAP}^{\star'}$, we can decompose it as follows
+
+\(
+    \begin{equation*}
+    \begin{split}
+        \theta_{MAP}^{\star'} & = \frac{\sum_{i=1}^{n}x_i}{a + n + b - 2} + \frac{a - 1}{a + n + b - 2}  \\
+        & = \frac{\sum_{i=1}^{n}x_i}{n} \cdot \frac{n}{a + n + b - 2} + \frac{a-1}{a+b-2} \cdot \frac{a+b-2}{a+n+b-1}\\
+        & = \theta^{\star}_{MLE} \cdot \frac{n}{a + n + b - 2} + \theta^{\star}_{MAP} \cdot \frac{a+b-2}{a+n+b-1}
+    \end{split}
+    \end{equation*}
+\)
+
+After choosing nth data points, we know that $\frac{n}{a + n + b - 2}$, and $\frac{a+b-2}{a+n+b-1}$ are constant values,
+
+~~~
+  \(
+  \theta_{MAP}^{\star'} \sim \left\{
+  \begin{array}{ll}
+  \theta^{\star}_{MLE} & n \rightarrow \infty \\
+  \theta^{\star}_{MAP} & n \rightarrow 0 \\
+  \end{array}\right.
+  \)
+~~~
+
+For each iteration, we absorb the knowledge from n data points. The posterior, $\theta_{MAP}^{\star'}$, will ba a linear
+combination of $\theta^{\star}_{MLE}$ and prior probability, $\theta^{\star}_{MAP}$. That means you learn some knowledge
+from the incoming data based on the previous assumption, and update the $\theta$. If $n \rightarrow \infty$, $\theta_{MAP}^{*'}$
+is approximate to $\theta_{MLE}$. Otherwise, $\theta_{MAP}^{*'} = \theta_{MAP}^{*}$. MLE for $\theta$ is an absolute value,
+and MAP for $\theta$ is like an increment on prior from new data.
