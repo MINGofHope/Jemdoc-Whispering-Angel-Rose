@@ -472,7 +472,7 @@ Below is the formula of the general form for the loss function and regularizatio
 For visualization easiness, $w$ for 2-dimensional space is picked.
 The contour for $\sum_{j=1}^{2}|w_j|^2$ can be seen as follows,
 ~~~
-{}{img_left}{../../../images/notes/ml/Linear_Regression/contour_regularization.PNG}{}{800}
+{}{img_left}{../images/notes/ml/Linear_Regression/contour_regularization.PNG}{}{800}
 ~~~
 
 == Summary
