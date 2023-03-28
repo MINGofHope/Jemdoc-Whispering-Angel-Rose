@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<title>Support Vector Machine (SVM)</title>
+<!-- MathJax -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async>
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+	  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- End MathJax -->
+</head>
+<body>
+<table summary="Table for page layout." id="tlayout">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category">ML</div>
+<div class="menu-item"><a href="2023-03-16-Introduction.html">Introduction</a></div>
+<div class="menu-item"><a href="2023-03-18-Linear-Regression.html">Linear&nbsp;Regression</a></div>
+<div class="menu-item"><a href="2023-03-23-Linear-Classification.html">Linear&nbsp;Classification</a></div>
+<div class="menu-item"><a href="2023-03-27-SVM.html">SVM</a></div>
+</td>
+<td id="layout-content">
+<div id="toptitle">
+<h1>Support Vector Machine (SVM)</h1>
+<div id="subtitle">SVM is a hard and discriminant method, which means to map the class into label \(1\) or \(-1\) directly by finding a decision
+boundary, \(w^Tx + b\). Compared to the previous Perceptron method, it can determine the unique decision boundary with the
+maximum probability for classification of new coming data points. In this blog, we introduce the hard-margin, soft-margin
+SVM, and the kernel trick for computation convenience.
+
+</div>
+</div>
+<h2>Hard Margin SVM</h2>
+<p>
+</p>
+<h3>Problem Definition</h3>
+<p>The idea is to maximize the margin to the decision boundary that can separates the data points for groups.
+Given data points \(\mathcal{D}\), \(\{(x_1,y_1), (x_2,y_2), \ldots, (x_n, y_n))\}\), \(x_i \in \mathbb{R}^d\), \(y_i \in \mathbb{R}\).
+The margin is the shortest distance for all points to the decision boundary, that is,
+</p>
+<p style="text-align:center">
+\[
+    M = \underset{x_i, i = 1, 2, \ldots, N}{min} \frac{|w^Tx_i + b|}{||w||}
+\]
+</p><p>The problem can be formulated as follows,
+</p>
+<p style="text-align:center">
+\[
+    \underset{w, b} max \quad M \\
+    s.t. \quad y_i(w^Tx_i + b) &gt; 0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+Substitute \(|w^Tx_i + b|\)  with \(y_i(w^Tx_i + b)\), and transform the constraints format,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{w,b}{max} \underset{x_i, i = 1, 2, \ldots, N}{min} \frac{y_i(w^Tx_i + b)}{||w||} \\
+    s.t. \exists r &gt; 0, \quad y_i(w^Tx_i + b) &gt;= r, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+Focus on the constraints, \(\quad y_i(w^Tx_i + b) &gt;= r\) iff \(min y_i(w^Tx_i + b) = r\), substitute this equation to the
+optimization objective,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{w,b}{max} \frac{r}{||w||} \\
+    s.t. \exists r &gt; 0, \quad y_i(w^Tx_i + b) &gt;= r, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+As we wanna find direction of the decision boundary, dividing the scale value \(r\) for \(w, b\) should not influence the
+final result,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{w,b}{max} \frac{1}{||w||} \\
+    s.t.  \quad y_i(w^Tx_i + b) &gt;= 1, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+For computation/derivation convenience, we remove the reverse format and optimize \(\frac{1}{2} w^Tw\) instead of \(w\). The
+prime problem is,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{w, b} min \frac{1}{2} w^Tw \\
+    s.t.  \quad y_i(w^Tx_i + b) &gt;= 1, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+</p>
+<h3>Problem Solution</h3>
+<h4>Convert the problem with Lagrange Function</h4>
+<p style="text-align:center">
+\[
+    \underset{w, b} min \underset{\lambda}{max} \quad L(w, b, \lambda) = \frac{1}{2} w^Tw + \sum_{i=1}^{N} \lambda_i (1-y_i(w^Tx_i+b)) \\
+    s.t. \quad \lambda_i &gt;= 0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+Let us analyze why this optimization problem is equivalent to the one in previous section. Let \(t = \sum_{i=1}^{N} \lambda_i (1-y_i(w^Tx_i+b))\).
+Suppose \(1-y_i(w^Tx_i+b) &lt;= 0\) for the optimization here, then the optimization problem
+\(\underset{w, b} min \underset{\lambda}{max} \quad L(w, b, \lambda)\) = \(\frac{1}{2} w^Tw + t\) = \(\underset{w, b}{min} \frac{1}{2} w^Tw\)
+,iff, \(\underset{\lambda}{max} \quad t = 0\), i.e., \(\lambda &gt;= 0\).
+
+</p>
+<h4>Dual Problem</h4>
+<p>As the prime problem is a quadratic one with the linear constraints, it follows the strong duality,
+</p>
+<p style="text-align:center">
+\[
+     \underset{w, b} min \underset{\lambda}{max} \quad L(w, b, \lambda) = \underset{\lambda}{max} \underset{w, b} min  \quad L(w, b, \lambda)
+\]
+</p><p>
+Then,
+</p>
+<p style="text-align:center">
+\[
+    \underset{\lambda}{max} \underset{w, b} min  \quad L(w, b, \lambda) = \frac{1}{2} w^Tw + \sum_{i=1}^{N} \lambda_i (1-y_i(w^Tx_i+b))\\
+    s.t. \quad \lambda_i &gt;= 0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+</p>
+<h4>Solve for \(w^{*}, b^{*}\)</h4>
+<p>Let \(\frac{\partial L}{\partial b} = 0\), \(\frac{\partial L}{\partial w} = 0\),
+</p>
+<p style="text-align:center">
+\[
+    \sum_{i=1}^{N} \lambda_i y_i = 0 \\
+    w^{*} = \sum_{i=1}^{N} \lambda_i^{*} y_i x_i
+\]
+</p><p>
+We need to solve the \(\lambda_i^{*}\) firstly. To do so, substitute \(w = \sum_{i=1}^{N} \lambda_i y_i x_i\) into the objective function,
+</p>
+<p style="text-align:center">
+\[
+    \underset{\lambda}{max} -\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}\lambda_i\lambda_jy_iy_jx_i^Tx_j + \sum_{i=1}^{N}\lambda_i \\
+    s.t. \quad \sum_{i=1}^{N} \lambda_i y_i = 0, \quad \lambda_i &gt;= 0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+We solve \(\lambda^{*}\) by Sequential Minimal Optimization (SMO) algorithm. The idea for SMO is we fix all other parameters,
+\(\lambda_j, j \in  1, 2, \ldots, N, j \neq i\), except the current optimized one, \(\lambda_i\), then optimize the current
+one parameter by setting the derivation of the optimization objective as 0. Then, move forward the next, do the similar
+optimization until convergence. For SVM, we can not optimize one parameter per time as it follows the constraint,
+
+</p>
+<p style="text-align:center">
+\[
+    \sum_{i=1}^{N} \lambda_i y_i = 0
+\]
+</p><p>
+If we just chose one parameter \(\lambda_i\) to optimize, then \(\lambda_i = -\frac{\sum_{j \neq i}^{N} x_j}{y_i}\). This is
+a constant without the effect to optimize. Thus, we optimize two parameters per time, \(\lambda_i, \lambda_j\), that is,
+</p>
+<p style="text-align:center">
+\[
+    \lambda_i x_i + \lambda_j x_j = c \\
+    s.t. \quad \lambda_i \geq 0, \lambda_j \geq 0, \quad \sum_{k \neq i,j}^{N} \lambda_k = -c
+\]
+</p><p>
+Here is the pseudocode,
+</p>
+<ul>
+<li><p>Initialize \(\lambda \in \mathbb{R}^{d*1}, \quad L = -\infty, \quad \epsilon\)
+</p>
+</li>
+<li><p>For loop below steps until convergence
+</p>
+</li>
+<li><p>Randomly pick two parameters, \(\lambda_i, \lambda_i\), where \(\lambda_j = \frac{c - \lambda_ix_i}{x_j}\).
+</p>
+</li>
+<li><p>Substitute with the optimization objective, and the objective becomes a problem just for \(\lambda_i, s.t. \lambda_i \geq 0\),
+</p>
+</li>
+<li><p>Solve the parameter \(\lambda_i^{*}\), i.e, \(\lambda_j^{*}\)
+</p>
+</li>
+<li><p>Calculate the new \(L'\)
+</p>
+</li>
+<li><p>Check if \(L&rsquo; - L &gt; \epsilon\), if so, then \(L = L'\); otherwise, break
+
+</p>
+</li>
+</ul>
+<p style="text-align:center">
+\[
+    \lambda^{*}
+\]
+</p><p>
+We obtain \(w^{*} = \sum_{i=1}^{N} \lambda_i^{*} y_i x_i\) as well. To obtain \(b^{*}\), we know it only occurs when points
+are in the support vectors, i.e,
+</p>
+<p style="text-align:center">
+\[
+    \underset{1:y=1}{min} ({w^{*}}^Tx_i + b) = 1 \\
+    \underset{1:y=-1}{max} ({w^{*}}^Tx_i + b) = -1 \\
+\]
+</p><p>
+Sum it up and solve for \(b^{*}\),
+</p>
+<p style="text-align:center">
+\[
+    b^{*} = -\frac{\underset{1:y=1}{min} {w^{*}}^Tx_i  + \underset{1:y=-1}{max} {w^{*}}^Tx_i}{2}
+\]
+</p><p>
+</p>
+<h3>Prediction</h3>
+<p>Now, we have all the parameters. Given a new data points, \(x_{new}\), to classify it based on the formula,
+</p>
+<p style="text-align:center">
+\[
+    y_{new} = sgn({w^{*}}^Tx_{new} + b^{*})
+\]
+</p><p>
+</p>
+<h2>Soft Margin SVM</h2>
+<h3>Problem Definition</h3>
+<p>If data points are not linearly separable with few errors, Soft Margin SVM will take effect here. The issues lie in
+some data points may be not met the constraints, i.e, \(y_i(w^Tx_i + b &gt;= 1\). A slack variable \(\delta\) will be introduced
+for tolerating those errors, \(y_i(w^Tx_i + b &gt;= 1 - \delta_{i}\). As we add slack variable for each data point, the
+optimization objective should be punished,
+</p>
+<p style="text-align:center">
+\[
+    \underset{w, b} min \frac{1}{2} w^Tw + C\sum_{i}^{N} \delta_i\\
+    s.t.  \quad y_i(w^Tx_i + b) &gt;= 1 - \delta_i, \quad \delta_i \geq0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+</p>
+<h3>Problem Solution</h3>
+<h4>Convert the problem with Lagrange Function</h4>
+<p style="text-align:center">
+\[
+    \underset{w, b, \delta} min \underset{\lambda, \beta}{max} \quad L(w, b, \lambda) = \frac{1}{2} w^Tw + C\sum_{i}^{N} \delta_i + \sum_{i=1}^{N} \lambda_i (1-\delta_i-y_i(w^Tx_i+b)) + \sum_{i=1}^{N}\beta_i \delta_i\\
+    s.t. \quad \lambda_i &gt;= 0, \beta_i &gt;= 0 \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+</p>
+<h4>Dual Problem</h4>
+<p style="text-align:center">
+\[
+     \underset{\lambda, \beta}{max} \underset{w, b, \delta}{min} \quad L(w, b, \lambda) = \frac{1}{2} w^Tw + C\sum_{i}^{N} \delta_i + \sum_{i=1}^{N} \lambda_i (1-\delta_i-y_i(w^Tx_i+b)) + \sum_{i=1}^{N}\beta_i \delta_i\\
+    s.t. \quad \lambda_i &gt;= 0, \quad \beta_i &gt;= 0 \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+</p>
+<h4>Solve for \(w^{*}, b^{*}\)</h4>
+<p>Let \(\frac{\partial L}{\partial b} = 0\), \(\frac{\partial L}{\partial w} = 0\), \(\frac{\partial L}{\partial \delta_i} = 0\),
+</p>
+<p style="text-align:center">
+\[
+    \sum_{i=1}^{N} \lambda_i y_i = 0 \\
+    w^{*} = \sum_{i=1}^{N} \lambda_i^{*} y_i x_i \\
+    C - \lambda_i - \beta_i = 0
+\]
+</p><p>
+We need to solve the \(\lambda_i^{*}\) firstly. To do so, substitute \(w = \sum_{i=1}^{N} \lambda_i y_i x_i\) into the objective function,
+</p>
+<p style="text-align:center">
+\[
+    \underset{\lambda}{max} -\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}\lambda_i\lambda_jy_iy_jx_i^Tx_j + \sum_{i=1}^{N}\lambda_i \\
+    s.t. \quad \sum_{i=1}^{N} \lambda_i y_i = 0, \quad 0 &lt;= \lambda_i &lt;= C, \quad C-\lambda_i-\beta_i = 0, \quad \forall i \in 1, \ldots, N
+\]
+</p><p>
+\(0 &lt;= \lambda_i &lt;= C\) can be extracted by \(C-\lambda_i-\beta_i = 0\) and \(\beta_i \geq 0\). We noticed that the problem is
+similar to the one in hard margin SVM, and the only difference is one more constraint, \(C - \lambda_i - \beta_i = 0\). As
+the optimization objective is not related to \(\beta_i\), we just optimize \(\lambda\). We can use the previous SMO in the
+hard margin section to solve \(\lambda^{*}\)
+
+We obtain \(w^{*} = \sum_{i=1}^{N} \lambda_i^{*} y_i x_i\) as well. To obtain \(b^{*}\), we know it only occurs when points
+are in the support vectors, i.e,
+</p>
+<p style="text-align:center">
+\[
+    \underset{1:y=1}{min} ({w^{*}}^Tx_i + b) = 1 - \delta_i \\
+    \underset{1:y=-1}{max} ({w^{*}}^Tx_i + b) = -1 + \delta_i \\
+\]
+</p><p>
+Sum it up and solve for \(b^{*}\),
+</p>
+<p style="text-align:center">
+\[
+    b^{*} = -\frac{\underset{1:y=1}{min} {w^{*}}^Tx_i  + \underset{1:y=-1}{max} {w^{*}}^Tx_i}{2}
+\]
+</p><p>
+</p>
+<h3>Prediction</h3>
+<p>Now, we have all the parameters. Given a new data points, \(x_{new}\), to classify it based on the formula,
+</p>
+<p style="text-align:center">
+\[
+    y_{new} = sgn({w^{*}}^Tx_{new} + b^{*}) = sgn(\sum_{i=1}^{N}\lambda_iy_ix_i^Tx_{new} + b^{*})
+\]
+</p><p>
+</p>
+<h2>Kernel Trick</h2>
+<p>Suppose a problem, one group data points is surrounded by another group with the circle shape, it is not separable in
+2-dimensional space. However, if map those points into a 3-dimensional space, then data points can be separated by a
+hyperplane. This give us the insight that problem may be solved in higher dimension if it does not work in a lower
+dimension. In lower dimension, if we solve the problem by SVM,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{\lambda}{max} -\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}\lambda_i\lambda_jy_iy_jx_i^Tx_j + \sum_{i=1}^{N}\lambda_i \\
+\]
+</p><p>
+In higher dimension, suppose the project vector becomes \(\phi(x_i), \phi(x_j)\), and then SVM optimizes,
+</p>
+<p style="text-align:center">
+\[
+    \underset{\lambda}{max} -\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}\lambda_i\lambda_jy_iy_j\phi(x_i)^T\phi(x_j) + \sum_{i=1}^{N}\lambda_i \\
+\]
+</p><p>
+It is computationally expensive to do the dot product for vectors in the higher dimension. \(x_i, x_j \in \mathbb{R}^{d}\),
+\(\phi(x_i), \phi(x_j) \in \mathbb{R}^{d^2}\). The time complexities for the dot product in these two dimensions are \(O(d), O(d^2)\).
+For lowering the computation cost, then the kernel trick is employed. That is to find the function for \(x_i, x_j\) in the
+lower dimension that equals to the dot product of vectors, \(\phi(x_i), \phi(x_j)\), in higher dimension, i.e.,
+</p>
+<p style="text-align:center">
+\[
+    K(x_i, x_j) = \phi(x_i) \cdot \phi(x_j)
+\]
+</p><p>
+For example, we have two vectors, \(x, z\), in a lower dimensional space,
+</p>
+<p style="text-align:center">
+\[
+    x = (x_1, \ldots, x_n)^T \\
+    z = (z_1, \ldots, z_n)^T
+\]
+</p><p>Then, suppose \(\phi(x)\) is
+</p>
+<p style="text-align:center">
+\[
+    \phi(x) = (x_1x_1, x_1x_2, x_1x_3, x_2x_1, x_2x_2, x_2x_3, x_3x_1, x_3x_2, x_3x_3)^T
+\]
+</p><p>We can get similar result for \(\phi(z)\), and if we multiply \(\phi(x)\) with \(\phi(z)\),
+</p>
+<p style="text-align:center">
+\[
+    K(x, z) = \phi(x)^T\phi(z) = \sum_{i=1}^{N}\sum_{j=1}^{N} x_ix_jz_iz_j = \sum_{i=1}^{N}x_iz_i \sum_{j=1}^{N}x_jz_j = (x^Tz)^2
+\]
+</p><p>This mean we just cal. \(x^Tz\) in a lower dimension (easy), and square it for the dot product in higher dimension.
+
+Here are some regular kernel that can be applied,
+</p>
+<ul>
+<li><p>Linear Kernel: \(K(x_i, x_j) = x_i^Tx_j\)
+</p>
+</li>
+<li><p>Random Decision Forest (RDF) Kernel: \(K(x_i, x_j) = exp(-\frac{||x_i-x_j||_2^2}{2\sigma^2})\)
+</p>
+</li>
+<li><p>Polynomial Kernel: \(K(x_i, x_j) = (x_i^Tx_j)^n\)
+</p>
+</li>
+</ul>
+<div id="footer">
+<div id="footer-text">
+Page generated 2023-03-28 19:26:57 Eastern Daylight Time, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>
