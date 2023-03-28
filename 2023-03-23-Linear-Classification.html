@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<title></title>
+<!-- MathJax -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async>
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+	  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- End MathJax -->
+</head>
+<body>
+<table summary="Table for page layout." id="tlayout">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category">ML</div>
+<div class="menu-item"><a href="2023-03-16-Introduction.html">Introduction</a></div>
+<div class="menu-item"><a href="2023-03-18-Linear-Regression.html">Linear&nbsp;Regression</a></div>
+<div class="menu-item"><a href="2023-03-23-Linear-Classification.html">Linear&nbsp;Classification</a></div>
+<div class="menu-item"><a href="2023-03-27-SVM.html">SVM</a></div>
+</td>
+<td id="layout-content">
+<p>
+</p>
+<h2>Linear Classification</h2>
+<p>Last section, we introduce the linear regression, of which the task is to predict a continuous value base on the model,
+\(y = \theta^Tx\). If we wanna classify the value into a binary group, like 1 or 0, this is a linear classification problem.
+<b>Hard and Soft</b> ways are employed here. Hard way means we map the function, \(y=\theta^Tx\), directly into a binary output,
+\({1, 0}\). Soft way is to model probability of these two binary classes given data, \(p(y_i|x), i \in \{0, 1\}\), if \(p(y_1)|x
+\gt \epsilon, \epsilon \in \{0, 1\}\), where \(\epsilon\) is certain probability value based on the domain knowledge, we
+classify the result as the group 1; otherwise, the group 0. Another terms for the model difference in classification task
+is <b>Discriminative Model and Generative Model</b>. Discriminative model directly calculates the \(p(y_i|x)\), and solve \(\theta\)
+or decision boundary using the MLE method. As it only separates data with groups, it is used for supervised learning.
+Generative model calculates the joint probability, and then use the posterior probability to inference the classification
+results, \(p(y|x) = p(x|y)p(y)\). To solve it, assumed distributions for \(p(y), p(x|y)\) will be granted, to maximize the
+\(p(y|x)\), and parameters for data distributions in likelihood and prior will be obtained. This model  are usually used
+in unsupervised learning.
+
+</p>
+<h3>Perceptron</h3>
+<p>Suppose that we have the data set \(\mathcal{D} = \{(x_1, y_1), \ldots, (x_n, y_n)\}\), where \(x_i \in \mathbb{R}^p, y_i \in
+\mathbb{R}\). The classification problem lies in finding a hyperplane that separates two types of data points, that is, for
+all \(i\),
+</p>
+<p style="text-align:center">
+\[
+    \begin{equation*}
+    y_i =
+        \begin{cases}
+        1, &amp; \theta^Tx_i &gt; 0 \\
+        0, &amp; \theta^Tx_i &lt; 0 \\
+        \end{cases}
+    \end{equation*}
+\]
+</p><p>
+I.e., those correctly classified points follow the inequality, \(y_i\theta^Tx_i &gt; 0\). To solve \(\theta\), a error function is
+required. The intuition is to use the number of points that are wrong classified, \(L(\theta) = \sum_{i=1}^{n}I\{y_i\theta^Tx_i &lt;= 0\}\).
+\(I\{y_i\theta^Tx_i &lt;= 0\}\) means that 1 if \(y_i\theta^Tx_i &lt;= 0\), otherwise 0. However, \(L(\theta)\) is not continuous, thus
+it is not differentiable. So, we can not employ the normal equation method to solve \(\theta\). Another option for \(L(\theta)\)
+would be
+</p>
+<p style="text-align:center">
+\[
+    L(\theta) = \sum_{i}^{n}-y_i\theta^{T}x_i
+\]
+</p><p>
+The intuition for this is that the loss function should be differentiable, and minimize the loss function. If we just use
+the \(y_i\theta^{T}x_i\), positive for those are correctly classified, negative for those are wrongly classified.
+Minimizing it means to discourage the positive but encourage the negative, i.e., to encourage errors, which is not what
+we wanna. To encourage correctness, we should add a negative symbol for the function. Gradient Descent is then employed
+to obtain the optimal \(\theta\) until convergence,
+</p>
+<p style="text-align:center">
+\[
+    \theta^{t+1} = \theta^{t} + \eta \sum_{i=1}^{n}y_ix_i
+\]
+</p><p>
+
+</p>
+<h3>Linear Discriminat Analysis (LDA)</h3>
+<p>It is similar to the previous task to find a hyperplane (decision boundary), \(\theta^{T}x = 0\), that classify binary groups.
+The idea here is to maximize the between-class difference and minimize the within-class variance on the direction of \(\theta\).
+To do so, we projected \(x_i\) to \(\theta\), and get the projection, \(z_i=|x_i|cos(\theta&rsquo;)\), where \(\theta'\) is the angle
+between \(x_i\) and \(\theta\). Suppose \(|\theta|=1\), then \(z_i = |x_i||\theta|cos(\theta&rsquo;) = \theta^Tx_i\), a scalar. There
+are two classes for \(z_i\), \(z_{c1}\) and \(z_{c2}\). The number of \(z_{c1}\) and \(z_{c2}\) are \(N_1\) and \(N_2\), respectively.
+The sum of them is the number of whole data points, \(N_1 + N_2 = N\). \(z_{\bar{c1}}\), and \(z_{\bar{c2}}\) are the average
+projection values for these two classes. We have between-class difference, \(B\),
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    B &amp; = (z_{\bar{c1}} - z_{\bar{c2}})^2 \\
+    &amp;= (\frac{1}{N_1}\sum_{i=1}^{N_1}z_i - \frac{1}{N_2}\sum_{j=1}^{N_2}z_j)^2 \\
+    &amp; = (\frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i - \frac{1}{N_2}\sum_{j=1}^{N_2}\theta^Tx_j)^2\\
+    &amp; = (\frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i - \frac{1}{N_2}\sum_{j=1}^{N_2}\theta^Tx_j)(\frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i - \frac{1}{N_2}\sum_{j=1}^{N_2}\theta^Tx_j)^T\\
+    &amp; = (\frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i - \frac{1}{N_2}\sum_{j=1}^{N_2}\theta^Tx_j)(\frac{1}{N_1}\sum_{i=1}^{N_1}x_i^T\theta - \frac{1}{N_2}\sum_{j=1}^{N_2}x_j^T\theta) \\
+    &amp; = \theta^{T}(x_{\bar{c1}} - x_{\bar{c2}})(x_{\bar{c1}} - x_{\bar{c2}})^T\theta \\
+    &amp; = \theta^TS_b\theta
+\end{split}
+\end{equation*}
+\]
+</p><p>
+For within-class variance of class 1, \(V_{c1}\),
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    V_{c1} &amp; = \frac{1}{N_1}\sum_{i=1}^{N_1} [\theta^Tx_i - \frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i]^2 \\
+    &amp;= \frac{1}{N_1}\sum_{i=1}^{N_1} [\theta^Tx_i - \frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i][\theta^Tx_i - \frac{1}{N_1}\sum_{i=1}^{N_1}\theta^Tx_i]^T \\
+    &amp; = \frac{1}{N_1}\sum_{i=1}^{N_1} [\theta^T(x_i - x_{\bar{c1}})][(x_i - x_{\bar{c1}})^T\theta]\\
+    &amp; = \theta^TS_{w1}\theta
+\end{split}
+\end{equation*}
+\]
+</p><p>
+Similarly, we get within-class variance of class 0, \(V_{c0} = \theta^TS_{w0}\theta = \frac{1}{N_2}\sum_{i=1}^{N_2} [\theta^T(x_i - x_{\bar{c0}})][(x_i - x_{\bar{c0}})^T\theta]\).
+\(V_c\) is the sum of \(V_{c1}\) and \(V_{c0}\),
+
+</p>
+<p style="text-align:center">
+\[
+    V_c = V_{c0} + V_{c1} = \theta^T(S_{w0} + S_{w1})\theta = \theta^TS_w\theta
+\]
+</p><p>
+Based on the optimization idea, to maximize the between-class difference and minimize the within-class variance on the
+direction of \(\theta\), the loss function could be,
+</p>
+<p style="text-align:center">
+\[
+    L(\theta) = \frac{B}{W} = \frac{\theta^TS_b\theta}{\theta^TS_w\theta}
+\]
+</p><p>
+Then, the derivative of \(L(\theta)\) with respect to \(\theta\),
+</p>
+<p style="text-align:center">
+\[
+    \frac{\partial L(\theta)}{\partial \theta} = 2S_b\theta(\theta^TS_w\theta)^{-1} - 2(\theta^TS_b\theta)(\theta^TS_w\theta)^{-2}S_w\theta\
+\]
+</p><p>
+Let \(\frac{\partial L(\theta)}{\partial \theta} = 0\),
+</p>
+<p style="text-align:center">
+\[
+    S_b\theta(\theta^TS_w\theta) = (\theta^TS_b\theta)S_w\theta
+\]
+</p><p>
+As \(\theta^TS_w\theta\) and \(\theta^TS_b\theta\) are both scalar values, it does influence the final solution for \(\theta\) if
+we remove it,
+</p>
+<p style="text-align:center">
+\[
+    \theta \propto (S_w)^{-1}S_b\theta = (S_w)^{-1}(x_{\bar{c1}}-x_{\bar{c2}})(x_{\bar{c1}}-x_{\bar{c2}})^T\theta \propto (S_w)^{-1}(x_{\bar{c1}}-x_{\bar{c2}})
+\]
+</p><p>
+This is because \(((x_{\bar{c1}}-x_{\bar{c2}})^T\theta \in \mathbb{R}, x_{\bar{c1}} \in \mathbb{R}^{p*1}, {S_w}_{p*p}\).
+After we get \(\theta\), then the prediction for a new data \(x'\) can be decided whether \(\theta^Tx &gt; 0\) or not.
+
+</p>
+<div class="infoblock">
+<div class="blocktitle">TO DO LIST</div>
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+\theta \cdot x = \theta^Tx \\
+S_b = (x_{\bar{c1}}-x_{\bar{c2}})(x_{\bar{c1}}-x_{\bar{c2}})^T \\
+Intuition \quad for \quad the \quad Induction
+\]
+</p></div></div>
+<p>
+</p>
+<h3>Logistic Regression</h3>
+<p>The weakness of previous hard way for classification is unable to tell whether a data point is more far from the decision
+boundary than another data points of the same class, as both \(\theta^Tx_i &gt; 0\). To measure the distance for points to
+the decision boundary, we introduce the probability for class given data points, \(p(y_i|x_i)\). The farthest it is, the
+highest probability it will have. Suppose we use \(\exp(\theta^Tx_i)\), and it equals to the format as below,
+</p>
+<p style="text-align:center">
+\[
+    p(y_i=1|x_i) = \exp(\frac{\theta^Tx_i}{2}),  \theta^Tx_i &gt; 0 \\
+    p(y_i=-1|x_i) = \exp(\frac{-\theta^Tx_i}{2}),  \theta^Tx_i &lt; 0
+\]
+</p><p>
+Normalize each probability and make the sum equals to 1,
+
+</p>
+<p style="text-align:center">
+\[
+    p(y_i=1|x_i) = \frac{p(y_i=1|x_i)}{p(y_i=1|x_i) + p(y_i=-1|x_i)} =  \frac{1}{1+\exp{(-\theta^Tx_i})} \\
+    p(y_i=-1|x_i) = 1 - p(y_i=1|x_i) = \frac{1}{1+\exp{(\theta^Tx_i)}}
+\]
+</p><p>
+The reason why we use \(\exp(\frac{\theta^Tx_i}{2})\) instead of \(\exp(\theta^Tx_i)\) is just for \(p(y_i=1|x_i)\) is a function
+of \(\theta^Tx_i\) for convenience. \(\frac{1}{1+\exp{(-\theta^Tx_i})}\) is also called \(sigmoid(\theta^Tx_i)\). We solve
+\(\theta^{*}\) by maximizing the the product of probability of classes given the data point, \(\prod_{i=1}^{n}p(y_i|x_i)\),
+i.e.,
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    \theta^{*} &amp; = \underset{\theta}{argmax} \prod_{i=1}^{n} p(y_i|x_i) \\
+    &amp; \underset{log}{\rightarrow} \underset{\theta}{argmin} \sum_{i=1}^{n} -log(p(y_i|x_i)) \\
+    &amp; = \underset{\theta}{argmin} \sum_{i=1}^{n} [-y_i log p(y_i=1|x_i) + (y_i-1) log p(y_i=0|x_i)] \\
+    &amp; = \underset{\theta}{argmin} \sum_{i=1}^{n} [y_i log [1+exp(-\theta^Tx_i)] + (1-y_i) log [1+exp(\theta^Tx_i)]]] \\
+    &amp; = \underset{\theta}{argmin} \sum_{i=1}^{n} y_i log \frac{1+exp(-\theta^Tx_i)}{1+exp(\theta^Tx_i)} + log [1+exp(\theta^Tx_i)] \\
+    &amp; = \underset{\theta}{argmin} \sum_{i=1}^{n} -y_i \theta^T x_i + log [1+exp(\theta^Tx_i)] \\
+    &amp; = \underset{\theta}{argmin} L(\theta)
+\end{split}
+\end{equation*}
+\]
+</p><p>
+Let \(\frac{\partial L(\theta)}{\partial \theta} = 0\),
+</p>
+<p style="text-align:center">
+\[
+    \sum_{i=1}^{n} -y_ix_i + \frac{x_i \cdot exp(\theta^T x_i)}{1 + exp(\theta^Tx_i) } = 0
+\]
+</p><p>No analytical solution for \(\theta\) will be found, as the non-linear relationship for the \(\theta\) and each are inside the
+sum operation. However, if you conduct second derivative operation of \(L(\theta)\) with respect to \(\theta\),
+</p>
+<p style="text-align:center">
+\[
+    \begin{equation*}
+    \begin{split}
+        \frac{\partial^2 L(\theta)}{\partial^2 \theta} &amp; = x_i^2 \cdot exp(\theta^T x_i)  [1 + exp(\theta^Tx_i)]^{-1} - x_i \cdot exp(\theta^Tx_i)
+        [1 + exp(\theta^Tx_i)]^{-2} \cdot exp(\theta^T x_i) x_i  \\
+        &amp; = [x_i^2 \cdot exp(\theta^T x_i)  [1 + exp(\theta^Tx_i)] - x_i^2 \cdot [exp(\theta^Tx_i)]^2][1+exp(\theta^Tx_i)]^{-2} \\
+        &amp; = [x_i^2 \cdot exp(\theta^T x_i)][1+exp(\theta^Tx_i)]^{-2} \\
+        &amp; &gt;= 0
+    \end{split}
+    \end{equation*}
+\]
+</p><p>
+It proves that \(L(\theta)\) is a convex function that can be solved by Gradient Descent Method. That is,
+
+</p>
+<p style="text-align:center">
+\[
+    \frac{\partial L(\theta)}{\partial \theta} = \sum_{i=1}^{n} x_i [ sigmoid(\theta^Tx_i) - y_i] \\
+    \theta^{t+1} = \theta^{t} - \eta \cdot \frac{\partial L(\theta)}{\partial \theta}
+\]
+</p><p>
+</p>
+<div class="infoblock">
+<div class="blocktitle">TO DO LIST</div>
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \sum_{i=1}^{n} x_i [ sigmoid(\theta^Tx_i) - y_i] = X^T(sigmoid(X\theta)-Y)
+\]
+</p></div></div>
+<h3>Gaussian Discriminant Analysis (GDA)</h3>
+<p>Though the discriminant in the name of GDA, this method is a generative model. Bayes theorem is employed for the posterior,
+Here is the assumption for the likelihood and prior,
+</p>
+<ul>
+<li><p>\(y \sim Bernoulli(\phi)\)
+</p>
+</li>
+<li><p>\(x|y=1 \sim \mathcal{N}(\mu_1, \sum)\)
+</p>
+</li>
+<li><p>\(x|y=0 \sim \mathcal{N}(\mu_0, \sum)\)
+
+</p>
+</li>
+</ul>
+<p style="text-align:center">
+\[
+    \underset{\phi, \mu_0, \mu_1, \sum}{argmax} p(X|Y)p(Y) = \underset{\phi, \mu_0, \mu_1, \sum}{argmax} \sum_{i=1}^{n} p(x_i|y_i)p(y_i) \\
+    \underset{log}{\rightarrow}\underset{\phi, \mu_0, \mu_1, \sum}{argmax} \sum_{i=1}^{N} y_i log\mathcal{N}(\mu_1, \sum) + (1-y_i) log\mathcal{N}(\mu_0, \sum) + y_i log(\phi) + (1-y_i)log(1-\phi) \\
+    = \underset{\phi, \mu_0, \mu_1, \sum}{argmax} P(\theta)
+\]
+</p><p>
+Let \(\frac{\partial P(\theta)}{\partial \phi} = 0\),
+
+</p>
+<p style="text-align:center">
+\[
+   \sum_{i=1}^{N} \frac{y_i}{\phi} + \frac{y_i - 1}{1 - \phi} = 0 \\
+
+\]
+</p><p>
+I.e.,
+
+</p>
+<p style="text-align:center">
+\[
+    \phi^{*} = \frac{1}{N}\sum_{i=1}^{N} y_i
+\]
+</p><p>
+Let \(\frac{\partial P(\theta)}{\partial \mu_1} = 0\),
+</p>
+<p style="text-align:center">
+\[
+    [\sum_{i=1}^{N}y_i(x_i - \mu_1)^T(\sum)^{-1}(x_i - \mu_1)]&rsquo; =[\sum_{i=1}^{N}y_i(x_i^T(\sum)^{-1}-\mu_1^T(\sum)^{-1})(x_1-\mu_1)]&rsquo; \\
+    =[\sum_{i=1}^{N} y_i[(x_i^T(\sum)^{-1}x -2x_i^T(\sum)^{-1}\mu_1 + \mu_1^T(\sum)^{-1}\mu_1]]&rsquo; \\
+    = \sum_{i=1}^{N} - 2y_i(\sum)^{-1}\mu_1 + 2(\sum)^{-1}\mu_1\\
+\]
+</p><p>
+</p>
+<div class="infoblock">
+<div class="blocktitle">TO Be CONTINUED</div>
+<div class="blockcontent">
+</div></div>
+<p>
+</p>
+<h3>Naive Bayes</h3>
+<p>It is a generative model. The idea is to approximate the probability of \(x\) given \(y\) with the product of the probability of
+\(x_i\) given \(y\), and \(i \in \{1, \ldots, p\}\), i.e.,
+</p>
+<p style="text-align:center">
+\[
+p(x|y)= p(x_1, x_2, \ldots, x_p|y) = p(x_1|y) \cdot p(x_2|x_1, y) \cdot \ldots \cdot p(x_p | x_1, x_2, \ldots, x_{p-1}, y) \sim \prod_{i=1}^{p}p(x_i|y)
+\]
+</p><p>
+iff \(x_i\) is independent with \(x_j\), where \(i, j \in \{1, \ldots, p\}\), and \(i \neq j\). Suppose that
+
+</p>
+<ul>
+<li><p>\(p(y) = \phi^{y} \cdot (1-\phi)^{1-y}\)
+</p>
+</li>
+<li><p>\(p(x_i|y) = \mathcal{N}(\mu_i, \sigma_i^2)\), if \(x_i\) is a continuous variable
+</p>
+</li>
+<li><p>\(p(x_i = i|y) = \theta_i\), and \(\sum_{i}^{K}\theta_i = 1\), if \(x_i\) is a discrete variable
+
+</p>
+</li>
+</ul>
+<p style="text-align:center">
+\[
+    p(y|x) \sim \prod_{i=1}^{p}p(x_i|y) \cdot p(y)
+\]
+</p><p>
+Use MLE method to solve all parameters, and inference for the new data. Here are the details,
+
+</p>
+<h3>Gaussian Naive Bayes</h3>
+<div id="footer">
+<div id="footer-text">
+Page generated 2023-03-28 19:22:58 Eastern Daylight Time, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

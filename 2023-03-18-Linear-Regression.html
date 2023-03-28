@@ -1,0 +1,717 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<title></title>
+<!-- MathJax -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async>
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+	  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- End MathJax -->
+</head>
+<body>
+<table summary="Table for page layout." id="tlayout">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category">ML</div>
+<div class="menu-item"><a href="2023-03-16-Introduction.html">Introduction</a></div>
+<div class="menu-item"><a href="2023-03-18-Linear-Regression.html">Linear&nbsp;Regression</a></div>
+<div class="menu-item"><a href="2023-03-23-Linear-Classification.html">Linear&nbsp;Classification</a></div>
+<div class="menu-item"><a href="2023-03-27-SVM.html">SVM</a></div>
+</td>
+<td id="layout-content">
+<p>
+</p>
+<h1>Linear Regression</h1>
+<p>Suppose that we have data points \(D = \{(x_1, y_1), \ldots, (x_i, y_i), \ldots, (x_n, y_n)\}\), &nbsp;\(x_i \in \mathbb{R^{d}}\),
+and \(y_i \in \mathbb{R}\). &nbsp;\(X_{n*p} = (x_1, x_2, \ldots, x_n)^T\), &nbsp;\(Y_{n*1}=(y_1, \ldots, y_n)^T\).
+
+</p>
+<div class="infoblock">
+<div class="blocktitle">Task</div>
+<div class="blockcontent">
+<p>to find a optimal \(\theta^{*}_{(d+1)*1}\) that form the hypothesis function \(h(x) = \sum_{j=0}^{d}\theta^jx_i^j = \theta^Tx_i\),
+to approximate the real function \(f(x)\) that represents the intrinsic pattern of the data.
+</p>
+</div></div>
+<div class="infoblock">
+<div class="blocktitle">Loss/Cost Function</div>
+<div class="blockcontent">
+<p>To quantify the sum of the difference between the predict value \(\hat{y_i}\) and the real one \(y_i\),
+</p>
+<p style="text-align:center">
+\[
+    L(Y, \hat{Y}) = \sum_{i=1}^{n} L(y_i, \hat{y_i}) = \sum_{i=1}^{n} L(y_i, \theta^Tx_i)
+\]
+</p></div></div>
+<div class="infoblock">
+<div class="blocktitle">Solve Parameters</div>
+<div class="blockcontent">
+<p>To minimize the Loss Function,
+</p>
+<p style="text-align:center">
+\[
+    \theta^{\star} = \underset{\theta}{argmax}(\sum_{i=1}^{n} L(y_i, \theta^Tx_i))
+\]
+</p></div></div>
+<h2>Least Squares Estimation (LSE)</h2>
+<h3>Method 1: Normal Equation</h3>
+<p>For this problem, we use the squared error defined by the L2 norm to define the loss function.
+
+</p>
+<p style="text-align:center">
+\[
+    L(\theta) = \sum_{i=1}^{n}(\theta^Tx_i - y_i)^{2} = \sum_{i=1}^{n}||\theta^Tx_i - y_i||^{2}_{2} = ||X\theta - Y||^2_2 \\
+
+\]
+</p><p>
+Let \(\frac{\partial L}{\partial \theta} = 0\),
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    \frac{\partial L}{\partial \theta} &amp;= \frac{\partial [(X\theta - Y)^T(X\theta - Y)]}{\partial \theta} \\
+    &amp; = \frac{\partial [\theta^TX^TX\theta - \theta^TX^TY - Y^TX\theta + Y^TY]}{\partial \theta} \\
+    &amp; = \frac{\partial [\theta^TX^TX\theta - 2\theta^TX^TY + Y^TY]}{\partial \theta} \\
+    &amp; = 2X^TX\theta - 2X^TY \\
+    &amp; = 0
+\end{split}
+\end{equation*}
+\]
+</p><p>
+The close-form solution would be,
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+\theta = (X^TX)^{-1}(X^TY)
+\]
+</p></div></div>
+<h4>Assumption \(\rightarrow\) \((X^TX)^{-1}\) is invertible</h4>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Let \(A = X^TX_{p*p}\), a square matrix, is invertible \(\iff\) \(A\) is full rank.
+</p>
+</div></div>
+<p>Prove: A is invertible \(\iff\) \(A^{-1}A = AA^{-1} = I\), i.e. \(A[a_1, a_2, \ldots, a_p] = I = [I_1, I_2, \ldots, I_p]\) \(\rightarrow\)
+\(A \cdot a_1 = I_1\) has unique solution \(\iff\) There are pth equations and pth unknown factor for solving \(a_1\). Besides,
+all rows or columns in \(A\) is linear independent (full rank). If you are not familiar with terms like linear independent,
+or rank here, pls refer to section - Math Basics.
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>A is full rank \(\rightarrow\) \(X_{n*p}\), \(n &gt;&gt; p\)
+</p>
+</div></div>
+<p><b>Prove</b>: Rank(A) \(&lt;= min(min(\)X^T\(), min(X)) &lt;= min(X) = min(n, p)\); If \(n &gt;&gt; p\), then \(Rank(A_{p*p}) = p &lt;= min(n,p)\),
+Otherwise \(n &lt;&lt; p\), Rank(\(A_{p*p}\)) \(= p &lt;= min(n, p) = n\), so this contradicts the assumption. The assumption is wrong.
+
+</p>
+<h4>Assumption: \(X\) is not large, i.e., \(n &lt;= n^{*}, d &lt; d^{*}\)</h4>
+<p>
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>It is costly to calculate the inverse of a large matrix, so we usually choose this method when the size of data is relative
+small, i.e., the number of records and features.
+</p>
+</div></div>
+<p>In a nutshell, only \(X^TX\) is invertible, and the number of data records is not that high (should be greater than the
+number of features but less than \(n^{\star} = 10000\) (arbitrarily))
+
+</p>
+<h3>Method 2: Gradient Descent</h3>
+<p>If there is no inverse for \(X^TX\) and X is a huge matrix, <b>Gradient Descent</b> (GD) is employed for solving the optimal \(\theta\).
+We know the loss function \(L(\theta) = ||X\theta - Y||_2^2\) is a <b>convex function</b> (think the shape of the curve along the
+time), so it has a unique global minimum for \(\theta\). The intuition for GD is to go down along the curve to the bottom
+point in the fastest direction, which is the opposite of gradient at that position, \(-\frac{\partial L}{\partial \theta^{t}}\).
+How far we should move is determined by the step size (learning rate, \(\eta\)). Update vector is the product of these two
+items, \(-\eta\frac{\partial L}{\partial \theta^{t}}\). For each iteration, we update the \(\theta\) as follows,
+
+</p>
+<p style="text-align:center">
+\[
+    \theta^{t+1} = \theta^{t} - \eta\frac{\partial L}{\partial \theta^{t}}
+\]
+</p><p>
+To address, the update vector is not necessarily in the same direction as the theta. The update vector determines the
+change in theta, and the magnitude of the change depends on the learning rate and the size of the gradient. Substitute
+the partial part the update formula,
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{t+1} = \theta^{t} - \eta \cdot X^T(X\theta^{t} - Y)
+\]
+</p></div></div>
+<p>Actually, \(\frac{\partial L}{\partial \theta^t} = 2(X^TX\theta^t - X^TY)\), and the scale factor 2 can be incorporated into
+\(\eta\). Also, Make sure that you really understand the variables in the above formula, so that you can calculate the updated
+\(\theta\) manually given a data set. You can have an intuitive understanding for each variable by analyzing the dimensionality.
+Here is the reference, \(\theta_{p*1}, \eta \in \mathbb{R}, X_{n*d}, Y_{n*1}\). Then, you for loop iterations and update
+the \(\theta\) until convergence as follows,
+
+</p>
+<div class="codeblock">
+<div class="blocktitle">Pseudocode</div>
+<div class="blockcontent"><pre>
+0. initialize \theta by creating an array with the size of p.
+1. for i in range(n_iterations):
+    1.1 update the \theta using the above formula
+    1.2 judge if convergence conditions are met
+        1.2.1 if so, break the loop
+        1.2.2 otherwise, go to next loop
+</pre></div></div>
+<p>
+Four convergence conditions are introduced.
+</p>
+<ol>
+<li><p>If the sum of square of gradient difference between the time \(t\) and \(t+1\) is lower than the arbitrary limit,
+\(||(\frac{\partial L}{\partial \theta})^{t+1} - (\frac{\partial L}{\partial \theta})^{t+1}||_2^2 &lt;= \epsilon\)
+
+</p>
+</li>
+<li><p>If the loss change lower than the limit,
+\(L(\theta)^{t+1} - L(\theta)^{t} &lt;= \epsilon\)
+
+</p>
+</li>
+<li><p>If the sum of the square of difference between \(\theta\) at times of \(t+1\) and \(t\) is lower than the arbitrary limit,
+\(||\theta^{(t+1)} - \theta^{(t)}||_2^2 &lt;= \epsilon\)
+
+</p>
+</li>
+<li><p>Plot the loss values or validation accuracy along iteration. If the curve approaches to plain, stop.
+
+</p>
+</li>
+</ol>
+<h4>Stochastic Gradient Descent</h4>
+<p>Stochastic gradient descent (SGD) is a variant of gradient descent optimization algorithm that randomly selects a
+subset of data points from the entire dataset to compute the gradient of the loss function and updates the model
+parameters based on the computed gradient. In other words, instead of computing the gradient over the entire dataset,
+SGD computes the gradient over a randomly selected subset of data points, which makes it faster and more efficient for
+large datasets. The stochasticity in SGD comes from the random selection of data points, which introduces some noise
+into the optimization process, but can also help the algorithm to escape from local minima.
+
+</p>
+<div class="codeblock">
+<div class="blocktitle">Pseudocode</div>
+<div class="blockcontent"><pre>
+0. initialize \theta by creating an array with the size of p.
+1. for i in range(n_iterations):
+    1.0 *randomly pick the subset of the original data*
+    1.1 update the \theta using the above formula
+    1.2 judge if convergence conditions are met
+        1.2.1 if so, break the loop
+        1.2.2 otherwise, go to next loop
+</pre></div></div>
+<p>
+</p>
+<h2>Maximum Likelihood Estimation (MLE)</h2>
+<p>Except for LSE, we can start from the probability to solve the task in linear regression, to find a hypothesis function
+\(\hat{y_i} = h(x_i) = \theta^Tx_i\) with a small noise function, \(\epsilon&rsquo; \sim \mathcal{N}(0, \sigma^2)\) , to approximate
+\(f(x_i)=y_i\) of the data. That is,
+</p>
+<p style="text-align:center">
+\[
+    y_i = \theta^Tx_i + \epsilon&rsquo; \sim \mathcal{N}(\theta^Tx_i, \sigma^2)
+\]
+</p><p>
+The idea is to maximize the likelihood function, \(p(Y|\theta)\),
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    p(Y|\theta) &amp;= \prod_{i=1}^{n} p(y_i|\theta) \\
+    &amp; = \prod_{i=1}^n \frac{1}{\sqrt{2\pi}\sigma}\exp(-\frac{(y_i - \theta^Tx_i)^2}{\sigma^2}) \\
+    &amp; \underset{log}{\rightarrow} \sum_{i=1}^{n} -(y_i - \theta^Tx_i)^2\\
+    &amp; = -L_{LSE}
+\end{split}
+\end{equation*}
+\]
+</p><p>
+To solve \(\theta^{\star}\), we can adopt normal equation or gradient descent method, and the interesting thing is,
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Maximize the likelihood function equals to minimize the least square error. MLE and LSE say the same story for linear
+regression from different perspectives.
+</p>
+</div></div>
+<h2>Maximum A Posterior (MAP)</h2>
+<p>We think the task of linear regression in a bayesian perceptive, model on the probability of \(\theta\) given \(Y\) (posterior),
+and maximize it for the optimal \(\theta\). Suppose prior follows a normal distribution with a mean value of 0, \(p(\theta)
+\sim \mathcal{N}(0, \sigma_{0}^2)\), then \(\theta^{*}\) will be calculated,
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    \theta^{*} &amp; = \underset{\theta}{argmax} logp(\theta|Y) \\
+    &amp;= \underset{\theta}{argmax} log[p(Y|\theta)p(\theta)] \\
+    &amp; = \underset{\theta}{argmax} [log(p(Y|\theta) + logp(\theta)]\\
+    &amp; \rightarrow \underset{\theta}{argmin} [(X\theta - Y)^2 + \frac{\sigma^2}{\sigma_{0}^2}\theta^T\theta]\\
+\end{split}
+\end{equation*}
+\]
+</p><p>
+</p>
+<h2>Current Issues</h2>
+<h3>No Bias</h3>
+<p>We only use a line that cross the origin point to approximate the data, i.e, \(y=\theta^Tx\), however, it can not model
+those data of which the pattern should be \(y = \theta^Tx + b\). For calculation simplification, we incorporate the bias
+into \(\theta_{p*1}\), and add a bias 1, \(1\), to the \(x_{p*1}\). So, the new \(\theta'\), and \(x'\) that
+support the bias item are shown below,
+
+</p>
+<p style="text-align:center">
+\[
+    \theta&rsquo; = (\theta_1, \theta_2, \ldots, \theta_p, b)^T \\
+    x&rsquo; = (x_{11}, x_{12}, \ldots, x_{1p}, 1) \\
+\]
+</p><p>
+If we extend to the matrix \(X_{n*p}\), add a bias column vector in which each value is 1, \(o_{p*1}\) to X,
+then we have \(X&rsquo;_{n*(p+1)}\)
+
+</p>
+<p style="text-align:center">
+\[
+    X&rsquo; = cat(X, o) = \begin{pmatrix}
+                         x_11 &amp; \ldots &amp; x_{1p} &amp; 1 \\
+                         \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+                         x_n1 &amp; \ldots &amp; x_{np} &amp; 1 \\
+                     \end{pmatrix}
+\]
+</p><p>
+</p>
+<h3>Norm 2 is Sensitive to Outliers</h3>
+<p>As we know, we solve \(\theta\) for \(y=\theta^Tx + b\) by minimizing the loss function,
+\(L(\theta) = \sum_{i=1}^{n}(\theta^Tx_i - y_i)^2 = ||X\theta - Y||_2^2\). If there is a extreme outlier, then \(\theta\) will
+be adjusted, and the approximate line, \(y=\theta^Tx\), will move close to the outlier to ensure a small loss value. However,
+it does not accurately captures the intrinsic pattern of the data. In other words, the outlier will lead to a high loss
+if we stick to the real pattern line. Thus, it is required for a loss function that are not sensitive to the outlier.
+The norm 1, \(L(\theta) = ||X\theta - Y||_1 = \sum_{i=1}^n |\theta^Tx_i - y_i|\) can be one option as it does not exemplify the errors from the outlier compared
+the norm 2.
+
+</p>
+<h4>Solution 1 - Norm 1 as Loss function</h4>
+<p><b>One weakness is no derivative with respect to x for the function \(f(x) = |x|\) will be obtained when \(x=0\) in the domain</b>. However, if we
+range x and calculate the derivative for each range,
+
+</p>
+<p style="text-align:center">
+\[
+  \frac{\partial f(x)}{\partial x} = \left\{
+  \begin{array}{ll}
+  1, &amp; x &gt; 0 \\
+  [-1, 1], &amp; x = 0 \\
+  -1, &amp; x &lt; 0\end{array}\right.
+  \]
+</p><p>
+Then the derivative of Norm 1 with respect to \(\theta\),
+</p>
+<p style="text-align:center">
+\[
+    \frac{\partial L}{\partial \theta^{j}} = \sum_{i=1}^{n} [sgn(\theta^Tx_i - y_i) \frac{\partial (\theta^Tx_i - y_i)}{\partial \theta^j}]
+    = \sum_{i=1}^{n} [sgn(\theta^Tx_i - y_i) x_i^j]
+\]
+</p><p>
+Where, \(x_i^j\) is the jth value in ith data records, which corresponds the \(\theta_j\), and \(sgn(z)\) can be seen as below,
+
+</p>
+<p style="text-align:center">
+\[
+    sgn(z) = \left\{
+    \begin{array}{ll}
+    1, &amp; z &gt; 0 \\
+    0, &amp; z = 0 \\
+    -1, &amp; z &lt; 0\end{array}\right.
+\]
+</p><p>
+Where \(z = \theta^Tx_i - y_i\). Then we use gradient descent formula to update the \(\theta^j\),
+
+</p>
+<p style="text-align:center">
+\[
+    \theta^{j&rsquo;} = \theta^j - \eta \cdot \sum_{i=1}^{n} sgn(\theta^Tx_i - y_i)x_i^j
+\]
+</p><p>
+\(\theta^{j&rsquo;}\) and \(\theta\) are scale values. Extending them to a vector, \(\theta\), then
+
+</p>
+<p style="text-align:center">
+\[
+    \theta^{&rsquo;} = \theta - \eta \cdot \sum_{i=1}^{n} sgn(\theta^Tx_i - y_i)x_i
+\]
+</p><p>
+Adapt the sum item into a matrix-vector multiplication (make your hand dirty),
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{&rsquo;} = \theta - \eta \cdot X^T sgn(X\theta - Y)
+\]
+</p></div></div>
+<p>\(sgn(X\theta - Y)_{n*1}\), apply sgn function for each value in the vector.
+
+</p>
+<h4>Solution 2 - Huber Loss</h4>
+<p>To be less sensitive to outliers and differentiable when \(z=0\), we introduce the Huber Loss function, a combination of
+Norm 1 (absolute value error) and Norm 2 (quadratic value). See formula,
+
+</p>
+<p style="text-align:center">
+\[
+    H(z) = \left\{
+    \begin{array}{ll}
+    \delta(|z| - \frac{\delta}{2}), &amp; |z| &gt;= \delta \\
+    \frac{z^2}{2}, &amp; |z| &lt; \delta \end{array}\right.
+\]
+</p><p>
+Recall the graph, and describe The Huber loss has a parameter \(\delta\) that controls the degree of penalization
+for large errors. When the absolute error \(|z|\) is smaller than \(\delta\), the loss is equivalent to the MSE
+loss, while when the absolute error is larger than \(\delta\), the loss is equivalent to the MAE loss.
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Huber loss is differentiable at anywhere, even when \(|z|=\delta\). Recall \(H&rsquo;(z)\) graph.
+</p>
+</div></div>
+<p style="text-align:center">
+\[
+    H&rsquo;(z) = \left\{
+    \begin{array}{ll}
+    \delta, &amp; z &gt;= \delta \\
+    z, &amp; |z| &lt; \delta \\
+    -\delta, &amp; z &lt;= \delta \end{array}\right.
+\]
+</p><p>
+</p>
+<h3>Overfitting</h3>
+<p>This is a <b>general issue</b> that not only suits for the linear regression, but we list it here for the introduction of later
+Regularization section. The <b>intuition</b> is that a model is too complex to learn from data and noise, while gain the knowledge
+from the noise is not what we wanna. As a consequence, the model will performs excellent in the training data, however,
+worse in unseen data (test data). Here are <b>causes</b> that give rise to the overfitting,
+
+</p>
+<ul>
+<li><p>A complex model with too many parameters
+</p>
+</li>
+<li><p>Less training data or unrepresentative data
+</p>
+</li>
+<li><p>Train many iterations that let the model memorize the data and noise
+</p>
+</li>
+<li><p>Use irrelevant or redundant features
+
+</p>
+</li>
+</ul>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Overfitting means large \(\theta\) values. For fitting a data distribution closely, we need a curve with a flexible and
+sharp shape that the gradient is large at points in the curve, i.e. \(\theta\) is large.
+</p>
+</div></div>
+<p><b>Attempts</b> can be implemented for avoiding the overfitting (simplify the model),
+
+</p>
+<ul>
+<li><p><b>Add Regularization.</b> Will mention in later section.
+</p>
+</li>
+<li><p><b>Data Augmentation.</b> Increase the number of training samples from the existing data for the data diversity. Examples can
+be rotation, flipping, cropping in computer vision task.
+</p>
+</li>
+<li><p><b>Early Stopping.</b> Avoid learn too much, and stop at the iteration that the test loss<i>accuracy increase</i>decrease.
+</p>
+</li>
+<li><p><b>Feature Selection.</b> Drop irrelevant or redundant features.
+</p>
+</li>
+<li><p><b>Cross Validation.</b> Get a mean accuracy for several models, and they are tested for loop k folds and trained on the rest
+the k-1 folds.
+</p>
+</li>
+<li><p><b>Ensemble Method.</b>  Ensemble methods are a technique to combine multiple models to improve the performance and prevent
+overfitting. Two popular types of ensemble methods are bagging and boosting. <b>Bagging</b> combines the predictions of multiple
+models trained on different subsets of the data, while <b>boosting</b> combines the predictions of multiple models trained
+sequentially on the same dataset.
+
+</p>
+</li>
+</ul>
+<h2>Regularization</h2>
+<p>The <b>idea</b> of regularization enables a smaller \(\theta\) value than the one got from the loss function for avoiding overfitting.
+Then, the optimization task becomes solving \(\theta\) for loss function, \(||X\theta - Y||_2^2 \), under the constraint
+that \(\theta\) is not large. We transform the optimization problem with the constraints into one without any constraints
+by introducing a penalty, \(\lambda Norm(\theta)\) on the loss function,
+
+</p>
+<p style="text-align:center">
+\[
+    L(\theta, \lambda) = ||X\theta - Y||_2^2 + \lambda ||\theta||
+\]
+</p><p>
+Here, \(\lambda &gt;= 0\), we adopt Norm 1 (||theta||), and \(L(\theta, \lambda)\) is called <b>Lagrange Function</b>. The optimized \(\theta^{*}\) will
+be obtained by letting the derivative of loss function with respect to \(\theta\) equals 0 for minimizing the Lagrange
+Function. If \(\lambda = 0\), the Lagrange Function equals to the original loss function with no constraints on \(\theta\).
+IF \(\lambda &gt; 0\), then if \(|\theta|\) is large, the loss function would be small (0 in the most extreme situation). The
+sum value is large. If \(\theta\) is small, the loss function would be large. The sum value is also large. So, the ideal
+\(|\theta|\) is not small and not large.
+
+</p>
+<div class="codeblock">
+<div class="blocktitle">TO DO LIST</div>
+<div class="blockcontent"><pre>
+Why the Lagrange Function will work here? Find the insight and quantify it under the equation, inequality constraints,
+and both.
+</pre></div></div>
+<p>
+</p>
+<h3>Lasso Regression</h3>
+<p>To solve \(\theta^{*}\), cost function: \(L(\theta) = ||X\theta - Y||_{2}^{2} + \lambda||\theta||\), deviate \(L(\theta)\) with \(\theta\),
+
+</p>
+<p style="text-align:center">
+\[
+\frac{\partial L(\theta)}{\partial \theta} = 2X^TX\theta - 2X^TY + \lambda sgn(\theta)
+\]
+</p><p>
+where,
+</p>
+<p style="text-align:center">
+\[
+    sgn(\theta) =
+        \begin{cases}
+            1 &amp; \theta_{i} &gt; 0 \\
+            0 &amp; \theta_i = 0 \\
+            -1 &amp; \theta_i &lt; 0
+        \end{cases}
+\]
+</p><p>
+Check the shape of all symbols in the above formula.
+
+</p>
+<p style="text-align:center">
+\[
+X_{n\cdot d}, &nbsp; \theta \in R^{d}, &nbsp; Y_{n \cdot 1}, &nbsp; \lambda \in R, &nbsp; \theta \in R^{d},
+\lambda sgn(\theta) \in R^{d}, &nbsp; \frac{\partial J(\theta)}{\partial \theta} \in R^{d}
+\]
+</p><p>
+Let derivation formula as 0, i.e., \(\frac{\partial L(\theta)}{\partial \theta} = 0 \)
+
+</p>
+<p style="text-align:center">
+\[
+\theta^{\star} = (X^TX)^{-1}(X^TY - \frac{\lambda}{2} sgn(\theta))
+\]
+</p><p>
+
+However, we have no idea for the \(\theta\) in the right part of the close form solution, gradient descent is better to employ here,
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{t+1} = \theta^{t} - \alpha \frac{\partial L(\theta^t)}{\partial \theta^t} = \theta^{t} - \alpha [2X^T(X\theta^t - Y) + \lambda sgn(\theta^t)]
+\]
+</p></div></div>
+<p>where \(\alpha\) is the learning rate, and t is the iteration time. After several iterations, and the convergence condition
+is met, then we obtain \(\theta^{\star}\). Btw, We can define \(L(\theta) = \frac{1}{2}||X\theta - Y||_{2}^{2} + \lambda||\theta||\)
+to remove the scale, 2, in the update formula.
+
+</p>
+<h3>Ridge Regression</h3>
+<p>To solve \(\theta^{*}\), cost function: \(\), deviate \(L(\theta)\) with \(\theta\),
+</p>
+<p style="text-align:center">
+\[
+    \frac{\partial L(\theta)}{\partial \theta} = 2(X^T(X\theta - Y) + \lambda\theta)
+\]
+</p><p>
+Let derivation formula as 0, i.e., \(\frac{\partial L(\theta)}{\partial \theta} = 0 \)
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{*} = (X^TX + \lambda I)^{-1}X^TY
+ \]
+</p></div></div>
+<p>where, \(I_{p*p}\). Compared to the normal equation from the linear regression without regularization, there is one item,
+\(\lambda I\) in the parentheses. The update formula for the gradient descent can be seen as follows,
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{t+1} = \theta^{t} - \alpha \frac{\partial L(\theta^t)}{\partial \theta^t} = \theta^{t} - 2\alpha [X^T(X\theta^t - Y) + \lambda \theta^t]
+\]
+</p></div></div>
+<h4>Geometry Intuition for Lasso and Ridge Regression</h4>
+<p>Before we move that far, let us think think a optimization objective with the constraints in geometry. Here is the problem,
+
+</p>
+<p style="text-align:center">
+\[
+    \underset{x, y}{min}( x^2 + y^2 ) \quad \text{subject to,} \quad x + y = 1
+\]
+</p><p>
+This can be summarized as 'one static and one move&rsquo; problem. <b>One static</b> is the constraint in geometry is a line that cross
+the point \((0,1)\) and straddles the first and third quadrants with slope value of \(-1\). <b>One move</b> is the function \(x^2 + y^2\).
+We mark it as \(r^2 = x^2 + y^2\), a circle with a radius \(r\). For \(r:0 \rightarrow \infty\), the circle is movable.
+Besides, the original problem, \(\underset{x, y}{min}( x^2 + y^2 )\), is equivalent to minimize \(r\), and subject to \(x+y-1=0\).
+That means the point \((x, y)\) that let \(r\) a minimum only lies on the line \(x+y-1 = 0\). In other words, the minimum value
+\(r^{2^*}\) occurs only when the circle is tangent to the this line. In this situation, \(r^{2^*} = \frac{1}{2}\), and \(x=y=\frac{1}{2}\).
+The intuitive effect is a movable circle with a radius \(r\) approaches to the line, and the optimal solution is when both
+
+</p>
+<div class="infoblock">
+<div class="blocktitle">Lasso and Ridge Regression</div>
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+L(w) = ||Xw - Y||_{2}^{2} + \lambda||w|| \\
+L(w) = ||Xw - Y||_{2}^{2} + \lambda||w||_2^2
+\]
+</p></div></div>
+<p>The goal is to find the optimal \(w^{*}\). The left sub-graph is for Ridge regression and the right one is for Lasso Regression.
+Take the left graph as an example, the <b>blue concentric circles</b> are a subset of projections of the loss function \(L(w) = ||Xw-Y||_2^2\)
+on the the plane which \(w\) lies. Brainstorm for the contour of the loss function and its location on the 3-D space,
+\((w_1, w_2, L)\). The <b>red curve and its inner yellow area</b> are the constraints, \(||W|| &lt;= \delta\). Because we plans to find
+the \(min L(w)\), which is to find the minimum radius of the blue circus. Under this radius, the circus will be tangent to
+the red curve at the <b>point \(w^{*}\)</b>. So is true of Lasso Regression.
+
+</p>
+<table class="imgtable"><tr><td>
+<img src="images/notes/ml/Linear_Regression/intuition_lasso_ridge.png" alt="" width="500px" />&nbsp;</td>
+<td align="left"></td></tr></table>
+<p>The interesting thing is that the blue curve inclines to get the optimal points with the red curve when on those at the
+axis, \(w_1 = 0\) or \(w_2 = 0\), for Lasso Regression. As some of the coefficient, \({w_i}\) are zero,
+the feature will be ignored for the linear regression. Thus, Lasso Regression can drop those unnecessary features that may
+be dependent automatically, so <b>Lasso Regression can be used in the stage of feature selection</b> instead of removing features
+manually by the domain knowledge.
+
+</p>
+<h3>Regularization General Form</h3>
+<p>Below is the formula of the general form for the loss function and regularization,
+</p>
+<p style="text-align:center">
+\[
+    L(w) = \frac{1}{2}(w^Tx_i - y_i)^2 + \frac{\lambda}{2}\sum_{j=1}^{p}|w_j|^{q}
+\]
+</p><p>
+For visualization easiness, \(w\) for 2-dimensional space is picked.
+The contour for \(\sum_{j=1}^{2}|w_j|^2\) can be seen as follows,
+</p>
+<table class="imgtable"><tr><td>
+<img src="images/notes/ml/Linear_Regression/contour_regularization.PNG" alt="" width="800px" />&nbsp;</td>
+<td align="left"></td></tr></table>
+<h2>Summary</h2>
+<p>This blog is for the linear regression. We start with the Least Square Estimation (LSE). Normal equation and Gradient
+Descent are two typical math tools for solving to obtain the optimal \(\theta\) for the fitted equation, \(y=\theta^Tx + b\).
+In normal equation, assumptions like \(X^TX\) should be full rank and the number of data points should exceeds the one of
+features of X are explored. For training acceleration, Stochastic Gradient Descent (SGD) is summarized.
+Then, we solve the problem in another two perspectives, Maximum Likelihood Estimation (MLE), and Maximum a Posterior (MAP).
+We also give the comparison between these two perspectives using the math intuition in section MAP. Next, we move forward
+to the current issues and solutions in our existing blog are presented. They are no bias, sensitive to outliers, and easy
+to overfit. Later, several potential solutions for avoiding overfitting are listed and one of them, add the regularization,
+is fully played. With various norm addition on the loss function, Lasso Regression and Ridge Regression are explained in
+terms of definition, geometry intuition, and further application (feature selection for Lasso Regression). Besides, the
+general form for regularization is given along with their shape.
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>We found that maximizing the MLE when the noise follows a Gaussian Distribution, i.e, \(P(Y|\theta)\) when
+\(y_i = \theta^TX + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)\), equals to minimizing the square errors in LSE.
+Besides, The minimum least squares error with an L2 regularization term is equivalent to the MAP solution under Gaussian
+noise prior. Adding an L1 regularization term is equivalent to MAP solution under the Laplace noise prior, which can be
+a practice for those friends who are interested in this problem.
+</p>
+</div></div>
+<div class="codeblock">
+<div class="blocktitle">TO DO LIST</div>
+<div class="blockcontent"><pre>
+Induction for the MAP solution under the laplace prior.
+</pre></div></div>
+<p>
+</p>
+<h2>Weaknesses of Linear Regression and Their Solutions</h2>
+<ul>
+<li><p>Unable to fit the data closely. 1) Add polynomial features. 2) Add a bias function outside the linear equation. 3) Depth for multi-linear transformation.
+</p>
+</li>
+<li><p>Linearity for the full space. Break this rule by various functions for different spaces.
+</p>
+</li>
+<li><p>No Linearity in the high-dimensional space and hard to learn. Usually, in high-dimensional space, the data is sparse. Dimensionality reduction
+may be helpful. PCA and Encoder are two ways for achieving this purpose.
+
+</p>
+</li>
+</ul>
+<h2>Implementation</h2>
+<p>
+A fake data will be designed. Normal equation, Gradient Descent, and Stochastic Gradient Descent will be tested. Lasso
+and Ridge regression are also taken into consideration. Performances under different algorithms and parameters are analyzed.
+We plan to implement the above goals using three styles, python from scratch only with numpy, Pytorch, and sklearn package.
+The code will be published on the github using google colab. Here, we give the link for different styles.
+
+</p>
+<h3>Reference</h3>
+<ul>
+<li><p>Lecture Notes, Prof. Ramin
+</p>
+</li>
+<li><p><a href="Machine" target=&ldquo;blank&rdquo;>Learning Blackboard Notes and Its Video</a>(https:<i></i>www.yuque.com<i>bystander-wg876</i>yc5f72/mkn2fh)
+</p>
+</li>
+<li><p>Images from Bishop in the book, Pattern Recognition and Machine Learning
+</p>
+</li>
+<li><p>Wikipedia
+</p>
+</li>
+<li><p>chatGPT
+
+</p>
+</li>
+</ul>
+<h4>Thanks a lot for those people who have the open-source spirits. Without them, I can not finish this blog. Feel free to let me know if I made a mistake, you can comment in toMe section on the left panel or pull a request in the github page.</h4>
+<div id="footer">
+<div id="footer-text">
+Page generated 2023-03-28 19:19:55 Eastern Daylight Time, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

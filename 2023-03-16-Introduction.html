@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<title></title>
+<!-- MathJax -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async>
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+	  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- End MathJax -->
+</head>
+<body>
+<table summary="Table for page layout." id="tlayout">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category">ML</div>
+<div class="menu-item"><a href="2023-03-16-Introduction.html">Introduction</a></div>
+<div class="menu-item"><a href="2023-03-18-Linear-Regression.html">Linear&nbsp;Regression</a></div>
+<div class="menu-item"><a href="2023-03-23-Linear-Classification.html">Linear&nbsp;Classification</a></div>
+<div class="menu-item"><a href="2023-03-27-SVM.html">SVM</a></div>
+</td>
+<td id="layout-content">
+<p>
+</p>
+<h1>Introduction</h1>
+<p>Machine learning builds on the probability theory. For probability, two perspectives can be came up with,
+Frequency Estimate or Bayesian Generation.
+
+Suppose a dataset \(X = (x_1, x_2, \ldots, x_n)^T\), \(x_i \in R^{d}\),
+
+</p>
+<h2>Frequency Estimate</h2>
+<p>It directly models probability of the data given parameters, \(p(X|\theta)\), and assume that \(\theta\) a fix value.
+Then \(\theta\) can be solved by setting the derivatives of conditional probability as 0 for the maximum probability of
+the data. The method is called Maximum Likelihood Estimate (MLE). In math expression, we have below,
+
+</p>
+<p style="text-align:center">
+\[
+    P = logp(X|\theta) =_{iid} \sum_{i=1}^{n}logp(x_i|\theta) \\
+    \frac{\partial P}{\partial \theta} = 0 \\
+    \theta = \theta^{\star}
+\]
+</p><p>
+</p>
+<h3>\(p(x_i|\theta) \sim N(\mu, \sigma^2)\)</h3>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    \theta^{\star} &amp; = \underset{\theta}{argmax} log[p(X|\theta)] \\
+    &amp; \underset{iid}{=} \underset{\theta}{argmax} log\prod_{i=1}^{n}[p(x_i|\theta)] \\
+    &amp; = \underset{\theta}{argmax}\sum_{i=1}^{n}log[\frac{1}{\sqrt{2\pi}\sigma}exp[{-\frac{(x_i-\mu)^2}{2\sigma^2}]]} \\
+    &amp; \sim \underset{\theta}{argmax}\sum_{i=1}^{n}[-log(\sigma) - \frac{(x_i - \mu)^2}{\sigma^2}]\\
+    &amp; = \underset{\theta}{argmax}S
+\end{split}
+\end{equation*}
+\]
+</p><p>
+Here, \(\theta\) contains \(\mu, \sigma\). To solve \(\mu\), let \(\frac{\partial S}{\partial \mu} = 0\),
+i.e., \(\sum_{i=1}^{n}(x_i - \mu) = 0 \)
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \mu^{\star} = \frac{1}{n}\sum_{i=1}^{n}x_i
+\]
+</p></div></div>
+<p>
+Similarly, let \(\frac{\partial S}{\partial \sigma^2} = 0\), i.e. \(\sum_{i=1}^{n}[\sigma^2-(x_i-\mu^{\star})^2] = 0\)
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    {\sigma^2}^{\star} = \frac{1}{n}\sum_{i=1}^{n}(x_i-\mu^{\star})^2
+\]
+</p></div></div>
+<p>Check estimators, \(\theta^{\star}\) (parameter value for sample), biased or not, i.e., whether \(E(\theta^{\star}) = \theta\),
+where \(\theta\) is the true value for the population
+
+</p>
+<div class="infoblock">
+<div class="blocktitle">Sample mean equals the population mean (unbiased)</div>
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \begin{equation*}
+    \begin{split}
+        E(\mu^{\star}) &amp; = E(\frac{1}{n}\sum_{i=1}^{n}x_i) = \frac{1}{n}\sum_{i=1}^{n}E(x_i) = \mu
+    \end{split}
+    \end{equation*}
+\]
+</p></div></div>
+<div class="infoblock">
+<div class="blocktitle">Sample variance does not equal the population variance (biased)</div>
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \begin{equation*}
+    \begin{split}
+       E({\sigma^2}^{\star}) &amp; = E(\frac{1}{n}\sum_{i=1}^{n}(x_i-\mu^{\star})^2) \\
+       &amp; = E(\frac{1}{n}\sum_{i=1}^{n}[(x_i - \mu) - (\mu^{\star} - \mu))]^{2}) \\
+       &amp; = E(\frac{1}{n}\sum_{i=1}^{n}[(x_i - \mu)^2 - 2(x_i-\mu)(\mu^{\star}-\mu) + (\mu^{\star}-\mu)^2]) \\
+       &amp; = E(\frac{1}{n}\sum_{i=1}^{n}(x_i-\mu)^2 - (\mu^{\star}-\mu)^2) \\
+       &amp; = Var(x_i) - Var(\mu^{\star}) \\
+       &amp; = \sigma^2 - \frac{\sigma^2}{n} \\
+       &amp; = \frac{n-1}{n}\sigma^2 \\
+       &amp; \neq \sigma^2
+    \end{split}
+    \end{equation*}
+\]
+</p></div></div>
+<p>This is weakness of the MLE method, the cause of the overwriting. When \(n \rightarrow \infty\), the error will be minimized.
+
+</p>
+<h3>\(p(x_i|\theta) \sim Bernoulli(x_i;\theta)\)</h3>
+<p>Bernoulli distribution quantify the probability, \(p(x_i|\theta)\), of an event with two results, \(x_i = \{1, 0\}\). \(\theta\) is
+the probability when the result equals 1, i.e., \(x_i = 1\); \(1-\theta\) is the one when the result equals 0, i.e, \(x_i = 0\). A
+classical example following the distribution is flipping coins (event). This event has two sides, front or back side. We
+aim to obtain the probability of front side or back side if flipped the coin once. In math,
+
+</p>
+<p style="text-align:center">
+\[
+  p(x_i|\theta) = \theta^{x_i}(1-\theta)^{1-x_i} = \left\{
+  \begin{array}{ll}
+  \theta, &amp; x_i = 1  \\
+  1 - \theta, &amp; x_i = 0 \\
+  \end{array}\right.
+  \]
+</p><p>
+To continue MLE for the optimal \(\theta^{\star}\),
+
+</p>
+<p style="text-align:center">
+\[
+\begin{equation*}
+\begin{split}
+    \theta^{\star} &amp; = \underset{\theta}{argmax} log[p(X|\theta)] \\
+    &amp; \underset{iid}{=} \underset{\theta}{argmax} log\prod_{i=1}^{n}[p(x_i|\theta)] \\
+    &amp; = \underset{\theta}{argmax}\sum_{i=1}^{n}log[\theta^{x_i}(1-\theta)^{1-x_i}]\\
+    &amp; = \underset{\theta}{argmax}\sum_{i=1}^{n}[x_ilog(\theta) + (1-x_i)log(1-\theta)]\\\\
+    &amp; = \underset{\theta}{argmax}S
+\end{split}
+\end{equation*}
+\]
+</p><p>
+Let \(\frac{\partial S}{\partial \theta} = 0\), i.e., \(\sum_{i=1}^{n}(\frac{x_i}{\theta}-\frac{1-x_i}{1-\theta}) = 0\)
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+    \theta^{\star} = \frac{\sum_{i=1}^{n}x_i}{n}
+\]
+</p></div></div>
+<h2>Bayesian Generation</h2>
+<p>Bayes formula: \(p(\theta|X) = \frac{p(X|\theta) \cdot p(\theta)}{p(X)}\). Here, \(P(X)=\int p(X|\theta)p(
+\theta)d\theta\), which is a function without the parameter \(\theta\). \(\theta\) is regarded as a distribution, which
+can be calculated after seeing the event like \(X\) from the prior, \(p(\theta)\), to the posterior, \(p(\theta|X)\).
+\(p(X|\theta)\) is the likelihood. In reality, we know those two distributions after the equal symbol, and obtain the
+\(\theta\) by the Maximum A Posterior (MAP). Suppose the prior follows a beta distribution,
+
+</p>
+<p style="text-align:center">
+\[
+     p(\theta) \sim beta(a, b) = \frac{\theta^{a-1}(1-\theta)^{b-1}}{\beta(a, b)}
+\]
+</p><p>
+Here, \(\beta(a,b) = \frac{\Gamma(a)}{\Gamma{a} \cdot \Gamma{b}}\). Gamma function \(\Gamma{(z)} = \int_{0}^{\infty} t^{z-1}\exp(-t)dt\),
+and \(a\), \(b\) are positive values. So, the denominator is a constant value that does not influence the final solution for \(\theta\).
+Each item in the likelihood function follows a Bernulli distribution,
+
+</p>
+<p style="text-align:center">
+\[
+    p(x_i|\theta) \sim Bernoulli(x_i;\theta) \\
+    P(X|\theta) \underset{iid}{=} \prod_{i=1}^{n} p(x_i|\theta) = \theta^{\sum_{i=1}^{n}x_i} (1-\theta)^{n-\sum_{i=1}^{n}x_i}
+\]
+</p><p>
+Then the posterior,
+
+</p>
+<p style="text-align:center">
+\[
+    \theta^{\star} = \underset{\theta}{argmax}p(\theta|X) \\
+    p(\theta|X) \sim p(X|\theta)p(\theta) = \theta^{\sum_{i=1}^{n}x_i} (1-\theta)^{n-\sum_{i=1}^{n}x_i}\frac{\theta^{a-1}(1-\theta)^{b-1}}{\beta(a, b)}\\
+    \sim \theta^{\sum_{i=1}^{n}x_i + a - 1}  (1-\theta)^{n-\sum_{i=1}^{n}x_i + b - 1}
+\]
+</p><p>
+let \(a&rsquo; = \sum_{i=1}^{n}x_i + a\), and \(b&rsquo; = n-\sum_{i=1}^{n}x_i + b\), the the above formula,
+
+</p>
+<p style="text-align:center">
+\[
+    p(\theta|X) \sim = \theta^{a&rsquo;-1}(1-\theta)^{b&rsquo;-1}
+\]
+</p><p>
+
+\(p(\theta|X), p(\theta) \sim beta(,)\). If the posterior distribution and the prior distribution both belong to the same
+family of distributions, then we can say that the prior is conjugate to the likelihood function.
+
+
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p>Let \(\frac{\partial p(\theta|X)}{\partial \theta} = 0\), we easily have
+</p>
+<p style="text-align:center">
+\[
+    \theta^{\star&rsquo;}_{MAP} = \frac{a&rsquo;-1}{a'+b&rsquo;-2} = \frac{\sum_{i=1}^{n}x_i + a - 1}{\sum_{i=1}^{n}x_i + a + n-\sum_{i=1}^{n}x_i + b - 2}
+    = \frac{\sum_{i=1}^{n}x_i + a - 1}{ a + n + b - 2}
+\]
+</p></div></div>
+<p>Conjugate priors in Bayesian statistics allow for convenient closed-form solutions for the posterior distribution of the parameter of interest.
+
+</p>
+<h3>\({\theta_{MAP}^{\star'}}\)</h3>
+<p>To vividly explain the \(\theta_{MAP}^{\star&rsquo;}\), we can decompose it as follows
+
+</p>
+<p style="text-align:center">
+\[
+    \begin{equation*}
+    \begin{split}
+        \theta_{MAP}^{\star&rsquo;} &amp; = \frac{\sum_{i=1}^{n}x_i}{a + n + b - 2} + \frac{a - 1}{a + n + b - 2}  \\
+        &amp; = \frac{\sum_{i=1}^{n}x_i}{n} \cdot \frac{n}{a + n + b - 2} + \frac{a-1}{a+b-2} \cdot \frac{a+b-2}{a+n+b-1}\\
+        &amp; = \theta^{\star}_{MLE} \cdot \frac{n}{a + n + b - 2} + \theta^{\star}_{MAP} \cdot \frac{a+b-2}{a+n+b-1}
+    \end{split}
+    \end{equation*}
+\]
+</p><p>
+After choosing nth data points, we know that \(\frac{n}{a + n + b - 2}\), and \(\frac{a+b-2}{a+n+b-1}\) are constant values,
+
+</p>
+<div class="infoblock">
+<div class="blockcontent">
+<p style="text-align:center">
+\[
+  \theta_{MAP}^{\star&rsquo;} \sim \left\{
+  \begin{array}{ll}
+  \theta^{\star}_{MLE} &amp; n \rightarrow \infty \\
+  \theta^{\star}_{MAP} &amp; n \rightarrow 0 \\
+  \end{array}\right.
+  \]
+</p></div></div>
+<p>For each iteration, we absorb the knowledge from n data points. The posterior, \(\theta_{MAP}^{\star&rsquo;}\), will ba a linear
+combination of \(\theta^{\star}_{MLE}\) and prior probability, \(\theta^{\star}_{MAP}\). That means you learn some knowledge
+from the incoming data based on the previous assumption, and update the \(\theta\). If \(n \rightarrow \infty\), \(\theta_{MAP}^{*&rsquo;}\)
+is approximate to \(\theta_{MLE}\). Otherwise, \(\theta_{MAP}^{*&rsquo;} = \theta_{MAP}^{*}\). MLE for \(\theta\) is an absolute value,
+and MAP for \(\theta\) is like an increment on prior from new data.</p>
+<div id="footer">
+<div id="footer-text">
+Page generated 2023-03-28 19:17:57 Eastern Daylight Time, by <a href="https://github.com/wsshin/jemdoc_mathjax" target="blank">jemdoc+MathJax</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,8 +1,8 @@
-# jemdoc: menu{outline/MENU}{index.html}
+# jemdoc: menu{outline/MENU}{}
 == Yanming Liu
 
 ~~~
-{}{img_left}{../images/bio.jpg}{}{131}{160} yes
+{}{img_left}{images/bio.jpg}{}{131}{160} yes
 Master, \n
 [https://catalog.northeastern.edu/graduate/engineering/mechanical-industrial/data-analytics-engineering-ms/ Data Analytics Engineeering] \n
 [https://mie.northeastern.edu/ Department of Mechanical & Industrial Engineering] \n
@@ -15,20 +15,15 @@ Email: /liu.yanmi/ \[@\] northeastern \[\DOT\] edu \n
 
 == About me
 {{<div align="justify">
-As a beginning data scientist, I have been developing and emphasizing
-on maintaining a distinctive research perspective, strong analytical 
-skills, a generous sharing spirit, and a lifelong learning mentality.
-I have received my B.S. and first mater's degree of Engineering from 
-Qilu University of Technology and Shandong University, Jinan, China, 
-in 2017 and 2020, respectively. A new journey has been set off in 
-data analysis and machine learning at Northeastern Universtiy since
-September 2021 as a second master's
- program.
+I hold a Bachelor's degree in Engineering from Qilu University of Technology and a Master's degree from Shandong University, Jinan, China, with a
+focus on data analysis and machine learning. Currently pursuing a second Master's degree at Northeastern University,
+I bring a unique perspective to data analysis from my diverse academic background. I am passionate about using data-driven
+solutions to solve real-world problems and committed to lifelong learning and knowledge sharing within the data science community.
 </div>}}
 
 == Research
-- Intepretable Deep Neural Network
-- Skill Gap Analyis for Data Scientist in Healthcare
+- An End-to-End Chatbot with Orthogonal Array Optimization
+- Pattern Matching between Biosonar Sequences and Peripheral Dynamics in Bats
 
 ~~~
 {Publications}
@@ -46,4 +41,4 @@ Louisville, Kentucky, 13-17 May 2019. \| 15 minutes speech
 bats"]: 178th Meeting, Acoustical Society of America. San Diego, California, 2-6 December 2019. \| 15 minutes speech
 ~~~
 
-Find me more via the [https://www.overleaf.com/read/dqprxyjwdrmf CV].
+Find me more via the [https://www.overleaf.com/read/vtnkfbxgxdpx].
